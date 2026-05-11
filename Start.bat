@@ -20,7 +20,7 @@ timeout /t 60 /nobreak > nul
 :: 1. CRASH VERIFICATION
 tasklist /FI "IMAGENAME eq %EXE_NAME%" | find /I "%EXE_NAME%" > nul
 if errorlevel 1 (
-    echo [%time%] SERVEUR CRASH ! Restarting...
+    echo [%time%] SERVER CRASH ! Restarting...
     goto start_server
 )
 
