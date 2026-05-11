@@ -32,7 +32,7 @@ if "%curtime%"=="%REBOOT_TIME%" (
     timeout /t 5 /nobreak > nul
     :: --- RCON SCRIPT CALL ---
     echo Sending the RCON backup command...
-    python humanitz1_rcon.py
+    python humanitz_rcon.py
 )
 
 :: Back to the loop
