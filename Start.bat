@@ -31,7 +31,7 @@ set "curtime=%curtime: =0%"
 if "%curtime%"=="%REBOOT_TIME%" (
     timeout /t 5 /nobreak > nul
     :: --- RCON SCRIPT CALL ---
-    echo Sending the RCON backup command...
+    echo Sending the RCON SAVE and RESTART command...
     python humanitz_rcon.py
 )
 
