@@ -34,8 +34,7 @@ if __name__ == "__main__":
         time.sleep(30)
         send_rcon("admin Reboot server in 30 Secondes!")
         time.sleep(20)
-        send_rcon("save")
         send_rcon("admin Reboot server in 10 Secondes!")
-        
+        send_rcon("save")
         
         
