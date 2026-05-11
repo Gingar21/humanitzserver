@@ -2,7 +2,7 @@
 :: --- CONFIGURATION ---
 :: If the server is not in the same folder, put the full path here.
 :: For REBOOT_TIME set your server time 
-:: log port=default is 77777  queryport=default is 27015"
+:: log port=default is 7777  queryport=default is 27015"
 set "EXE_NAME=HumanitZServer.exe"
 set "ARGS=-log port=  queryport="
 set "REBOOT_TIME=00:00"
