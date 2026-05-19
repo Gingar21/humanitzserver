@@ -1,0 +1,14 @@
+{
+    "current_lang": "Fran\u00e7ais",
+    "steamcmd_dir": "",
+    "server_dir": "",
+    "net_port": "7777",
+    "net_queryport": "27015",
+    "watchdog_enabled": "false",
+    "auto_restart_enabled": "false",
+    "restart_time_1": "",
+    "restart_time_2": "",
+    "restart_time_3": "",
+    "restart_time_4": "",
+    "rcon_ip": "127.0.0.1"
+}
