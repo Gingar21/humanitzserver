@@ -11,7 +11,7 @@ if not os.path.exists(APPDATA_DIR):
     os.makedirs(APPDATA_DIR)
 
 HELP_FILE = "RCONCommands.txt"
-KEY = b'uX6_L7V9W4pZ2m8G1n0B3v5C4x8D9y1E2f3G4h5I6j7=' 
+KEY = For Encrypted file change this
 
 HUMANITZ_COMMANDS = [
     "--- Info & Players ---", "info", "Players", "fetchbanned",
