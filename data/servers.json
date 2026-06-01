@@ -1,0 +1,15 @@
+{
+    "servers": [
+        {
+            "id": "default",
+            "name": "Server 1",
+            "server_dir": "E:/Humanitz-server",
+            "steamcmd_dir": "E:/Steamcmd",
+            "rcon_ip": "127.0.0.1",
+            "rcon_port": "8888",
+            "rcon_password": "",
+            "port": "7777",
+            "query_port": "27015"
+        }
+    ]
+}

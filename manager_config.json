@@ -1,0 +1,17 @@
+{
+    "current_lang": "Fran\u00e7ais",
+    "steamcmd_dir": "E:\\Steamcmd",
+    "server_dir": "E:\\Humanitz-server",
+    "net_port": "7777",
+    "net_queryport": "27015",
+    "watchdog_enabled": "false",
+    "auto_restart_enabled": "true",
+    "restart_time_1": "20:03",
+    "restart_time_2": "",
+    "restart_time_3": "",
+    "restart_time_4": "",
+    "rcon_ip": "127.0.0.1",
+    "reset_spawners_before_save": "true",
+    "auto_msg_text": "",
+    "auto_msg_interval": 0
+}

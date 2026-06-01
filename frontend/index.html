@@ -1,0 +1,1500 @@
+﻿<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HumanitZ Server Manager</title>
+<style>
+:root{--red:#d33434;--red2:#7e171d;--green:#54e39a;--amber:#f0b45b;--text:#eef2f6;--muted:#9aa3ad;--line:rgba(255,255,255,.12);--glass:rgba(8,10,13,.18);--glass2:rgba(8,10,13,.28);--dark:rgba(2,4,7,.58);--shadow:0 28px 110px rgba(0,0,0,.58)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-height:100vh;font-family:Inter,'Segoe UI',Arial,sans-serif;color:var(--text);background:#050608;overflow-x:hidden}body:before{content:"";position:fixed;inset:0;background:url('/static/assets/humanitz-background-clean.png') center/cover no-repeat;filter:brightness(1.12) contrast(1.18) saturate(1.08);opacity:1;z-index:-5}body:after{content:"";position:fixed;inset:0;background:radial-gradient(circle at 68% 24%,rgba(211,52,52,.16),transparent 34%),linear-gradient(90deg,rgba(0,0,0,.28),rgba(0,0,0,.08) 45%,rgba(0,0,0,.22)),linear-gradient(180deg,rgba(0,0,0,.04),rgba(0,0,0,.30));z-index:-4;pointer-events:none}.scan{position:fixed;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.018),rgba(255,255,255,.018) 1px,transparent 1px,transparent 5px);opacity:.2;z-index:-3;pointer-events:none}.aurora{position:fixed;width:48vw;height:48vw;border-radius:50%;background:radial-gradient(circle,rgba(211,52,52,.16),transparent 62%);filter:blur(12px);right:-15vw;top:-16vw;z-index:-2;animation:pulse 8s ease-in-out infinite}@keyframes pulse{50%{transform:scale(1.25);opacity:.55}}@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}@keyframes glow{50%{box-shadow:0 0 42px rgba(211,52,52,.28)}}
+.app{display:grid;grid-template-columns:280px 1fr;min-height:100vh}.sidebar{position:sticky;top:0;height:100vh;padding:25px 18px;background:linear-gradient(180deg,rgba(4,5,8,.50),rgba(4,5,8,.25));border-right:1px solid rgba(255,255,255,.10);backdrop-filter:blur(12px)}.brand{height:106px;display:flex;flex-direction:column;justify-content:center;border:1px solid rgba(255,255,255,.10);border-radius:22px;padding:18px;background:linear-gradient(135deg,rgba(255,255,255,.08),rgba(255,255,255,.02));box-shadow:var(--shadow);position:relative;overflow:hidden}.brand:after{content:"";position:absolute;inset:auto -30px -30px auto;width:100px;height:100px;background:rgba(211,52,52,.25);filter:blur(32px)}.logo{font-size:34px;font-weight:1000;letter-spacing:-1.5px}.logo span{color:var(--red);text-shadow:0 0 18px rgba(211,52,52,.65)}.tag{margin-top:6px;color:var(--muted);font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase}.nav{margin-top:22px}.nav button{width:100%;display:flex;align-items:center;gap:12px;padding:14px 14px;margin:7px 0;border:1px solid transparent;border-radius:16px;background:transparent;color:#b2bac3;font-weight:850;cursor:pointer;transition:.2s;text-align:left}.nav button i{width:30px;height:30px;border-radius:11px;display:grid;place-items:center;background:rgba(255,255,255,.06);font-style:normal}.nav button:hover,.nav button.active{background:linear-gradient(90deg,rgba(211,52,52,.22),rgba(255,255,255,.045));border-color:rgba(211,52,52,.26);transform:translateX(3px);color:#fff}.nav button.active i{background:rgba(211,52,52,.34);box-shadow:0 0 24px rgba(211,52,52,.30)}.sidebox{position:absolute;left:18px;right:18px;bottom:18px;border:1px solid rgba(255,255,255,.10);border-radius:18px;padding:15px;background:rgba(0,0,0,.18);color:#a6aeb7;font-size:12px}.sidebox b{display:block;color:#fff;margin-bottom:5px}.content{padding:30px 34px;max-width:1500px;width:100%;margin:0 auto}.top{display:flex;justify-content:space-between;gap:18px;align-items:center;margin-bottom:22px;animation:rise .45s both}.eyebrow{color:#d6dade;font-size:12px;font-weight:1000;text-transform:uppercase;letter-spacing:.18em}.top h1{font-size:32px;margin:7px 0 5px;letter-spacing:-.6px}.sub{color:#aab2bb;font-size:13px}.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.status{border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.24);border-radius:999px;padding:10px 14px;font-weight:950;font-size:12px;text-transform:uppercase;letter-spacing:.10em}.status.online{color:#90ffc1;border-color:rgba(84,227,154,.38);box-shadow:0 0 28px rgba(84,227,154,.12)}.status.offline{color:#ff8585;border-color:rgba(211,52,52,.38);box-shadow:0 0 28px rgba(211,52,52,.12)}.clock{color:#cfd5db;font-weight:800;border:1px solid rgba(255,255,255,.10);border-radius:14px;padding:10px 12px;background:rgba(0,0,0,.18)}
+.hero{display:grid;grid-template-columns:1.35fr .65fr;gap:16px;margin-bottom:16px}.panel{border:1px solid rgba(255,255,255,.12);border-radius:24px;background:linear-gradient(135deg,rgba(12,14,18,.24),rgba(8,10,13,.12));box-shadow:var(--shadow);backdrop-filter:blur(8px);overflow:hidden;animation:rise .55s both}.hero-main{min-height:360px;padding:26px;position:relative}.hero-main:before{content:"TRUST NO ONE";position:absolute;right:22px;bottom:5px;font-size:92px;font-weight:1000;letter-spacing:-5px;color:rgba(255,255,255,.045);pointer-events:none}.server-name{display:flex;align-items:center;justify-content:space-between;gap:14px;position:relative;z-index:1}.server-name h2{font-size:28px;margin:0 0 10px}.live-dot{width:11px;height:11px;border-radius:50%;background:var(--red);box-shadow:0 0 18px var(--red);display:inline-block;margin-right:8px}.meta-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:28px 0 24px;position:relative;z-index:1}.meta{padding:15px;border:1px solid rgba(255,255,255,.10);border-radius:18px;background:rgba(0,0,0,.16)}.meta small{display:block;color:#929aa4;font-weight:850;text-transform:uppercase;font-size:10px;letter-spacing:.10em}.meta strong{display:block;margin-top:8px;font-size:14px;word-break:break-word}.actions{display:flex;gap:10px;flex-wrap:wrap;position:relative;z-index:1}.btn{border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:12px 16px;background:rgba(255,255,255,.06);color:#fff;font-weight:950;cursor:pointer;transition:.18s}.btn:hover{transform:translateY(-2px);box-shadow:0 16px 45px rgba(0,0,0,.35)}.btn.green{background:rgba(84,227,154,.16);border-color:rgba(84,227,154,.35);color:#a9ffd0}.btn.red{background:rgba(211,52,52,.20);border-color:rgba(211,52,52,.38);color:#ffb3b3}.btn.amber{background:rgba(240,180,91,.16);border-color:rgba(240,180,91,.34);color:#ffd79a}.btn.dark{background:rgba(0,0,0,.22)}.quick-panel{padding:22px}.panel-title{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}.panel-title h3{margin:0;font-size:14px;letter-spacing:.10em;text-transform:uppercase;color:#dce2e8}.chip{font-size:11px;border:1px solid rgba(255,255,255,.10);border-radius:999px;padding:6px 9px;color:#b7bec6;background:rgba(0,0,0,.16)}.big-stat{display:grid;grid-template-columns:90px 1fr;gap:16px;align-items:center;padding:14px;border-radius:18px;background:rgba(0,0,0,.14);border:1px solid rgba(255,255,255,.08);margin-bottom:12px}.ring{width:82px;height:82px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--red) 0deg,rgba(255,255,255,.09) 0deg);font-weight:1000;box-shadow:inset 0 0 20px rgba(0,0,0,.45)}.big-stat b{font-size:22px}.big-stat span{display:block;color:#9ca5af;font-size:12px;margin-top:4px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px}.card{padding:20px;border:1px solid rgba(255,255,255,.11);border-radius:22px;background:linear-gradient(145deg,rgba(11,13,17,.22),rgba(5,7,9,.12));backdrop-filter:blur(7px);box-shadow:0 20px 80px rgba(0,0,0,.32);animation:rise .65s both}.card h3{margin:0 0 12px;color:#c4cbd3;font-size:12px;letter-spacing:.12em;text-transform:uppercase}.metric{font-size:34px;font-weight:1000;letter-spacing:-1px}.muted{color:#9aa3ad;font-size:13px}.bar{height:9px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:14px}.bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--red2),var(--red));border-radius:999px;transition:.45s}.tab{display:none;animation:rise .35s both}.tab.active{display:block}.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}.console{min-height:420px;max-height:520px;overflow:auto;font-family:Consolas,monospace;font-size:12px;line-height:1.55;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.10);border-radius:18px;padding:16px;white-space:pre-wrap;color:#d7dde3}.cmdrow{display:flex;gap:10px;margin-top:12px}.cmdrow input{flex:1}input,textarea,select{width:100%;border:1px solid rgba(255,255,255,.12);border-radius:14px;background:rgba(0,0,0,.22);color:#fff;padding:12px 13px;outline:none}input:focus,textarea:focus{border-color:rgba(211,52,52,.45);box-shadow:0 0 0 4px rgba(211,52,52,.10)}label{display:block;color:#c0c7cf;font-size:12px;font-weight:850;margin-bottom:6px}.formgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.path-picker{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}.path-picker input{min-width:0}.password-wrap{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}.password-wrap input{min-width:0}.eye-btn{height:42px;min-width:46px;padding:0 12px;border-radius:14px}.browse-btn{height:42px;padding:0 14px;border-radius:14px;white-space:nowrap}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:46px;padding:10px 12px;border:1px solid rgba(255,255,255,.10);border-radius:16px;background:rgba(0,0,0,.14)}
+.toggle-row label{margin:0;flex:1}
+.switch{position:relative;display:inline-block;width:58px;height:32px;flex:0 0 auto}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;cursor:pointer;inset:0;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18);transition:.22s;border-radius:999px;box-shadow:inset 0 0 12px rgba(0,0,0,.35)}
+.slider:before{content:"";position:absolute;height:24px;width:24px;left:3px;top:3px;background:#c6cbd1;border-radius:50%;transition:.22s;box-shadow:0 5px 18px rgba(0,0,0,.42)}
+.switch input:checked + .slider{background:linear-gradient(90deg,rgba(126,23,29,.95),rgba(211,52,52,.92));border-color:rgba(255,120,120,.45);box-shadow:0 0 22px rgba(211,52,52,.26)}
+.switch input:checked + .slider:before{transform:translateX(26px);background:#fff}
+.bool-state{min-width:46px;text-align:right;font-size:11px;font-weight:1000;letter-spacing:.08em;text-transform:uppercase;color:#ff9b9b}
+.bool-state.on{color:#9fffc8}
+.ini-fields{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.ini-section{margin-bottom:22px}.ini-section h3{margin:0 0 12px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.10);color:#fff}.command-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.toast{position:fixed;right:24px;bottom:24px;background:rgba(4,6,9,.72);border:1px solid rgba(211,52,52,.36);border-radius:18px;padding:14px 18px;box-shadow:var(--shadow);display:none;z-index:20}.kbd{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;place-items:center;z-index:30}.kbd-box{width:min(680px,92vw);border:1px solid rgba(255,255,255,.14);border-radius:26px;padding:20px;background:rgba(8,10,13,.72);backdrop-filter:blur(18px);box-shadow:var(--shadow)}.kbd-list{display:grid;gap:8px;margin-top:12px}.kbd-item{display:flex;justify-content:space-between;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.06);cursor:pointer}.kbd-item:hover{background:rgba(211,52,52,.16)}canvas{width:100%;height:180px;border-radius:18px;background:rgba(0,0,0,.14);border:1px solid rgba(255,255,255,.08)}
+@media(max-width:1180px){.app{grid-template-columns:1fr}.sidebar{position:relative;height:auto}.sidebox{position:static;margin-top:18px}.hero,.two{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,1fr)}.meta-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:720px){.content{padding:18px}.top{align-items:flex-start;flex-direction:column}.grid,.formgrid,.ini-fields,.command-grid{grid-template-columns:1fr}.meta-grid{grid-template-columns:1fr}.hero-main:before{font-size:46px}.cmdrow{flex-direction:column}.logo{font-size:28px}}
+</style>
+
+<style>
+.players-list{display:grid;gap:10px}
+.player-row{display:grid;grid-template-columns:1.2fr 1fr auto;gap:12px;align-items:center;padding:14px;border-radius:18px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(8px)}
+.player-name{font-weight:900;color:#fff}
+.player-id{font-family:Consolas,monospace;color:#b9c0c8;font-size:12px;word-break:break-all}
+.player-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+@media(max-width:900px){.player-row{grid-template-columns:1fr}.player-actions{justify-content:flex-start}}
+</style>
+
+
+<style>
+.file-manager{display:grid;grid-template-columns:minmax(280px,380px) 1fr;gap:16px}
+.file-list{display:grid;gap:8px;max-height:620px;overflow:auto;padding-right:4px}
+.file-item{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;padding:11px;border-radius:14px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08);cursor:pointer}
+.file-item:hover{background:rgba(211,52,52,.16)}
+.file-item.active{border-color:rgba(211,52,52,.55);background:rgba(211,52,52,.18)}
+.file-icon{font-size:20px}
+.file-name{font-weight:850;color:#fff;word-break:break-all}
+.file-meta{font-size:11px;color:var(--muted)}
+.file-editor textarea{width:100%;min-height:520px;font-family:Consolas,monospace;font-size:12px;line-height:1.5}
+.breadcrumb{font-family:Consolas,monospace;color:#d7dce2;background:rgba(0,0,0,.25);padding:10px;border-radius:14px;word-break:break-all}
+@media(max-width:1000px){.file-manager{grid-template-columns:1fr}.file-editor textarea{min-height:360px}}
+</style>
+
+
+<style>
+.auth-overlay{position:fixed;inset:0;z-index:9999;display:none;place-items:center;background:rgba(0,0,0,.72);backdrop-filter:blur(12px)}
+.auth-box{width:min(520px,92vw);border:1px solid rgba(255,255,255,.12);border-radius:24px;background:linear-gradient(135deg,rgba(10,12,18,.92),rgba(30,5,8,.88));box-shadow:0 30px 90px rgba(0,0,0,.65);padding:28px}
+.auth-logo{font-size:34px;font-weight:1000;letter-spacing:-1px}.auth-logo span{color:var(--red)}
+.auth-box input{width:100%;margin:8px 0 12px 0}
+.auth-warning{padding:12px;border-radius:14px;background:rgba(211,52,52,.16);border:1px solid rgba(211,52,52,.35);color:#ffd0d0;margin:12px 0}
+.auth-row{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.auth-error{color:#ff9b9b;min-height:22px;margin-top:8px}
+</style>
+
+
+
+
+
+<style>
+.lang-box{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  min-height:42px;
+  padding:0 12px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(0,0,0,.35);
+  backdrop-filter:blur(10px);
+}
+.lang-box select{
+  width:auto!important;
+  min-width:135px;
+  height:34px;
+  padding:0 8px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.16);
+  background:rgba(10,10,12,.92);
+  color:#fff;
+  font-weight:900;
+  cursor:pointer;
+}
+#installUpdateBtn{
+  min-width:210px;
+  white-space:nowrap;
+  text-align:center;
+  justify-content:center;
+}
+.hero .actions,.hero-actions,.actions{flex-wrap:wrap}
+@media(max-width:900px){
+  #installUpdateBtn{min-width:100%;width:100%}
+  .lang-box{width:100%;justify-content:space-between}
+}
+</style>
+
+
+<style>
+.server-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:16px}
+.server-card{padding:16px;border-radius:20px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);cursor:pointer;transition:.18s}
+.server-card:hover{background:rgba(211,52,52,.18);border-color:rgba(211,52,52,.45)}
+.server-card.active{border-color:rgba(46,204,113,.55);background:rgba(46,204,113,.12)}
+.server-card h3{margin:0 0 8px 0}
+.server-card .muted{font-size:12px;line-height:1.45}
+.server-card-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+</style>
+
+
+<style>
+.auth-lang{margin-left:auto}
+.auth-box .lang-box{margin-bottom:10px}
+.server-card-actions .btn{min-width:90px}
+</style>
+
+
+<style>
+body.auth-active .toolbar > .lang-box,
+body.server-select-active .toolbar > .lang-box{
+  display:none!important;
+}
+
+</style>
+
+
+<style>
+#authOverlay .login-lang{
+  margin:10px 0 18px 0;
+  width:max-content;
+}
+#authOverlay .login-lang select{
+  min-width:150px;
+}
+</style>
+
+</head>
+<body>
+
+<div class="auth-overlay" id="serverSelectOverlay">
+  <div class="auth-box" style="width:min(860px,94vw)">
+    <div class="auth-row">
+      <div>
+        <div class="auth-row"><div class="auth-logo">HUMANIT<span>Z</span></div></div>
+        <div class="tag" data-i18n="server_choice_tag">Choix du serveur</div></div>
+      <button class="btn dark" onclick="hideServerSelector()" data-i18n="back_to_panel">Retour au panel</button><button class="btn dark" onclick="logoutPanel()" data-i18n="logout">Déconnexion</button>
+    </div>
+
+    <h2 data-i18n="choose_server">Choisir un serveur</h2>
+    <p class="muted" data-i18n="choose_server_desc">Sélectionne le serveur à gérer ou ajoute un nouveau serveur.</p>
+
+    <div id="serverCards" class="server-grid"></div>
+
+    <div class="actions" style="margin-top:16px">
+      <button class="btn red" onclick="openAddServer()" data-i18n="add">+ Add</button>
+    </div>
+
+    <div id="addServerForm" style="display:none;margin-top:18px">
+      <h3 data-i18n="add_edit_server">Ajouter / modifier un serveur</h3>
+      <div class="formgrid">
+        <div><label data-i18n="server_name">Nom du serveur</label><input id="ms_name" placeholder="Ex: Serveur PVE"></div>
+        <div><label data-i18n="server_folder">Dossier serveur</label><div class="path-picker"><input id="ms_server_dir"><button class="btn dark browse-btn" onclick="browseFolderMS('ms_server_dir')" type="button" data-i18n="browse">Parcourir</button></div></div>
+        <div><label data-i18n="steamcmd_folder">Dossier SteamCMD</label><div class="path-picker"><input id="ms_steamcmd_dir"><button class="btn dark browse-btn" onclick="browseFolderMS('ms_steamcmd_dir')" type="button" data-i18n="browse">Parcourir</button></div></div>
+        <div><label data-i18n="rcon_ip">IP RCON</label><input id="ms_rcon_ip" value="127.0.0.1"></div>
+        <div><label data-i18n="rcon_port">Port RCON</label><input id="ms_rcon_port" value="8888"></div>
+        <div><label data-i18n="rcon_password">Mot de passe RCON</label><input id="ms_rcon_password" type="password"></div>
+        <div><label data-i18n="game_port">Port jeu</label><input id="ms_port" value="7777"></div>
+        <div><label data-i18n="query_port">Query port</label><input id="ms_query_port" value="27015"></div>
+      </div>
+      <div class="actions" style="margin-top:14px">
+        <button class="btn red" onclick="saveServerProfile()" data-i18n="save_server">Sauvegarder serveur</button>
+        <button class="btn dark" onclick="closeAddServer()" data-i18n="cancel">Annuler</button>
+      </div>
+    </div>
+
+    <div class="auth-error" id="serverSelectError"></div>
+  </div>
+</div>
+
+
+<div class="auth-overlay" id="authOverlay">
+  <div class="auth-box">
+    <div class="auth-logo">HUMANIT<span>Z</span></div>
+<div class="lang-box auth-lang login-lang">
+  <span>🌐</span>
+  <select id="langSelectLogin" onchange="setLang(this.value)">
+    <option value="fr">Français</option>
+    <option value="en">English</option>
+    <option value="es">Español</option>
+    <option value="de">Deutsch</option>
+    <option value="it">Italiano</option>
+    <option value="pt">Português</option>
+    <option value="nl">Nederlands</option>
+    <option value="pl">Polski</option>
+  </select>
+</div>
+    <div class="tag">Server Manager sécurisé</div>
+
+    <div id="loginView">
+      <h2 data-i18n="login_title">Connexion au panel</h2>
+      <p class="muted" data-i18n="login_subtitle">Identifiant provisoire : admin · mot de passe provisoire : 0000</p>
+      <label data-i18n="username">Identifiant</label>
+      <input id="authUsername" value="admin" autocomplete="username">
+      <label data-i18n="password">Mot de passe</label>
+      <input id="authPassword" type="password" value="0000" autocomplete="current-password">
+      <button class="btn red" onclick="loginPanel()" data-i18n="login_btn">Se connecter</button>
+    </div>
+
+    <div id="changePasswordView" style="display:none">
+      <h2 data-i18n="change_password">Changer le mot de passe provisoire</h2>
+      <div class="auth-warning" data-i18n="change_password_warning">Le mot de passe provisoire 0000 doit être remplacé avant d’utiliser le panel.</div>
+      <label data-i18n="current_password">Mot de passe actuel</label>
+      <input id="currentPassword" type="password" value="0000" autocomplete="current-password">
+      <label data-i18n="new_password">Nouveau mot de passe</label>
+      <input id="newPassword" type="password" placeholder="Minimum 6 caractères" autocomplete="new-password">
+      <label data-i18n="confirm_password">Confirmer le nouveau mot de passe</label>
+      <input id="confirmPassword" type="password" placeholder="Confirme le mot de passe" autocomplete="new-password">
+      <button class="btn red" onclick="changePanelPassword()" data-i18n="save_new_password">Enregistrer le nouveau mot de passe</button>
+    </div>
+
+    <div class="auth-error" id="authError"></div>
+  </div>
+</div>
+<div class="scan"></div><div class="aurora"></div><div class="app"><aside class="sidebar"><div class="brand"><div class="logo">HUMANIT<span>Z</span></div><div class="tag">Server Manager</div></div><nav class="nav" id="nav"></nav><div class="sidebox"><b data-i18n="tip_title">Astuce</b><span data-i18n="tip_press">Appuie sur</span> <b>Ctrl + K</b> <span data-i18n="tip_palette">pour ouvrir la palette d’actions rapide.</span></div></aside><main class="content"><header class="top"><div><div class="muted" id="activeServerName" style="font-weight:900;margin-bottom:4px">Aucun serveur sélectionné</div><h1 id="pageTitle" data-i18n="dashboard">Tableau de bord</h1></div><div class="toolbar"><button class="btn dark" onclick="showServerSelector()" data-i18n="change_server">Changer serveur</button><div class="lang-box">
+  <span>🌐</span>
+  <select id="langSelect" onchange="setLang(this.value)">
+    <option value="fr">Français</option>
+    <option value="en">English</option>
+    <option value="es">Español</option>
+    <option value="de">Deutsch</option>
+    <option value="it">Italiano</option>
+    <option value="pt">Português</option>
+    <option value="nl">Nederlands</option>
+    <option value="pl">Polski</option>
+  </select>
+</div><button class="btn dark" data-i18n="logout" onclick="logoutPanel()" data-i18n="logout">Déconnexion</button><div class="clock" id="clock">--:--</div><div class="status offline" id="status">Offline</div></div></header>
+<section id="overview" class="tab active"><div class="hero"><div class="panel hero-main"><div class="server-name"><div><h2 id="serverName">HumanitZ Dedicated Server</h2><div class="muted"><span class="live-dot"></span><span id="exePath">Executable non détecté</span></div></div><span class="chip" id="serverDirChip">Aucun dossier</span></div><div class="meta-grid"><div class="meta"><small>Adresse RCON</small><strong id="rconAddr">127.0.0.1:8888</strong></div><div class="meta"><small>Port jeu</small><strong id="portInfo">7777 / 27015</strong></div><div class="meta"><small>Disque</small><strong id="diskInfo">--</strong></div><div class="meta"><small>Uptime panel</small><strong id="uptime">00:00:00</strong></div></div><div class="actions"><button class="btn green" onclick="power('start')" data-i18n="start">▶ Démarrer</button><button class="btn red" onclick="power('stop')" data-i18n="stop">■ Arrêter</button><button class="btn amber" onclick="power('restart')" data-i18n="restart">↻ Redémarrer</button><button class="btn dark" id="installUpdateBtn" onclick="openInstallUpdateModal()">⬇ Installer / Mise à jour</button></div></div><div class="panel quick-panel"><div class="panel-title"><h3>État système</h3><span class="chip">Live 5s</span></div><div class="big-stat"><div class="ring" id="cpuRing">0%</div><div><b>CPU</b><span id="cpuLabel">Mesure en attente</span></div></div><div class="big-stat"><div class="ring" id="ramRing">0%</div><div><b>RAM</b><span id="ramLabel">Mesure en attente</span></div></div><canvas id="spark"></canvas></div></div><div class="grid"><div class="card" onclick="showTab('players')" style="cursor:pointer"><h3>Joueurs</h3><div class="metric" id="playerCount">--</div><div class="muted">connectés détectés via RCON</div><div class="bar"><span id="playersBar"></span></div><div class="muted" id="dashboardPlayersMini" style="margin-top:10px;line-height:1.5">Chargement...</div></div><div class="card"><h3>Backups</h3><div class="metric" id="backupCount">--</div><div class="muted">archives disponibles</div><div class="bar"><span style="width:42%"></span></div></div><div class="card"><h3>Console</h3><div class="metric" id="logLines">--</div><div class="muted">lignes de journal panel</div><div class="bar"><span style="width:60%"></span></div></div><div class="card"><h3>Sécurité</h3><div class="metric">OK</div><div class="muted">accès local 127.0.0.1</div><div class="bar"><span style="width:90%"></span></div></div></div></section>
+<section id="console" class="tab"><div class="two"><div class="panel card"><div class="panel-title"><h3>Console RCON</h3><button class="btn dark" onclick="document.getElementById('rconOut').textContent=''" data-i18n="clear">Vider</button></div><div class="console" id="rconOut">Console prête. Lance une commande RCON.</div><div class="cmdrow"><input id="cmd" placeholder="Ex: Players, save, admin message..."><button class="btn red" onclick="sendRcon()" data-i18n="send">Envoyer</button></div></div><div class="panel card"><div class="panel-title"><h3>Commandes rapides</h3><span class="chip">Admin</span></div><div class="command-grid" id="quickCmds"></div><br><div class="panel-title"><h3>Joueurs</h3><button class="btn dark" onclick="players()">Actualiser</button></div><div class="console" id="playersOut" style="min-height:220px">Aucune donnée joueur.</div></div></div></section>
+
+<section id="players" class="tab">
+  <div class="panel card">
+    <div class="panel-title">
+      <div>
+        <span class="eyebrow" data-i18n="players_eyebrow">👥 Gestion joueurs</span>
+        <h3 data-i18n="players_title">Players</h3>
+        <p class="muted" data-i18n="players_desc">Liste les joueurs connectés via RCON Players, puis permet kick, message privé ou annonce globale.</p>
+      </div>
+      <div class="actions">
+        <button class="btn red" onclick="loadPlayers()" data-i18n="refresh">Actualiser</button><button class="btn dark" onclick="fetchBannedPlayers()" data-i18n="banned">Bannis</button>
+        <button class="btn dark" onclick="clearPlayersOutput()" data-i18n="clear">Vider</button>
+      </div>
+    </div>
+
+    <div class="formgrid">
+      <div>
+        <label data-i18n="global_admin_message">Message global admin</label>
+        <input id="playersGlobalMessage" placeholder="Message à envoyer à tout le serveur..." data-i18n-placeholder="global_message_placeholder">
+      </div>
+      <div style="display:flex;align-items:end">
+        <button class="btn amber" onclick="sendPlayersGlobalMessage()" data-i18n="send_global">Envoyer global</button>
+      </div>
+    </div>
+
+    <div class="grid" style="margin-top:16px">
+      <div class="card"><h3 data-i18n="connected">Connectés</h3><div class="metric" id="playersConnectedCount">0</div><div class="muted" data-i18n="detected_via_rcon">détectés via RCON</div></div>
+      <div class="card"><h3 data-i18n="last_refresh">Dernier refresh</h3><div class="metric" id="playersLastRefresh" style="font-size:20px">--</div><div class="muted" data-i18n="timestamp">horodatage</div></div>
+      <div class="card"><h3 data-i18n="command_label">Commande</h3><div class="metric" style="font-size:20px">Players</div><div class="muted" data-i18n="rcon_source">source RCON</div></div>
+    </div>
+
+    <div class="panel card" style="margin-top:16px">
+      <div class="panel-title">
+        <h3 data-i18n="connected_players_list">Joueurs connectés</h3>
+        <span class="chip" id="playersChip">Aucun joueur</span>
+      </div>
+      <div id="playersList" class="players-list">
+        <div class="muted" data-i18n="click_refresh_players">Clique sur Actualiser pour charger les joueurs.</div>
+      </div>
+    </div>
+
+    <div class="console" id="playersAdvancedOutput" style="margin-top:14px;min-height:220px">Aucune donnée joueur.</div>
+  </div>
+</section>
+
+<section id="config" class="tab"><div class="panel card"><div class="panel-title"><h3>Configuration panel</h3><button class="btn red" onclick="saveConfig()" data-i18n="save">Sauvegarder</button></div><div class="formgrid"><div><label>Dossier serveur HumanitZ</label><div class="path-picker"><input id="server_dir" placeholder="Sélectionne le dossier du serveur..."><button class="btn dark browse-btn" onclick="browseFolder('server_dir')" type="button" data-i18n="browse">Parcourir</button></div></div><div><label data-i18n="steamcmd_folder">Dossier SteamCMD</label><div class="path-picker"><input id="steamcmd_dir" placeholder="Sélectionne le dossier SteamCMD..."><button class="btn dark browse-btn" onclick="browseFolder('steamcmd_dir')" type="button" data-i18n="browse">Parcourir</button></div></div><div><label data-i18n="game_port">Port jeu</label><input id="port"></div><div><label>Query Port</label><input id="query_port"></div><div><label data-i18n="rcon_ip">IP RCON</label><input id="rcon_ip"></div><div><label data-i18n="rcon_port">Port RCON</label><input id="rcon_port"></div><div><label data-i18n="rcon_password">Mot de passe RCON</label><input id="rcon_password" type="password"></div></div></div><br>
+
+<div class="panel card"><div class="panel-title"><h3>GameServerSettings.ini</h3><button class="btn red" onclick="saveIni()">Sauvegarder INI</button></div><div id="ini"><div class="muted">Chargement...</div></div></div></section>
+
+<section id="files" class="tab">
+  <div class="panel card">
+    <div class="panel-title">
+      <div>
+        <span class="eyebrow" data-i18n="file_manager_eyebrow">📁 Gestion serveur</span>
+        <h3 data-i18n="files">Fichiers</h3>
+        <p class="muted" data-i18n="file_manager_desc">Navigue dans le dossier serveur, édite les fichiers texte/INI, upload, télécharge, renomme ou supprime.</p>
+      </div>
+      <div class="actions">
+        <button class="btn red" onclick="loadFiles(fileCurrent)" data-i18n="refresh">Rafraîchir</button>
+        <button class="btn dark" onclick="createFilePrompt()" data-i18n="new_file">Nouveau fichier</button>
+        <button class="btn dark" onclick="createFolderPrompt()" data-i18n="new_folder">Nouveau dossier</button>
+      </div>
+    </div>
+
+    <div class="breadcrumb" id="fileBreadcrumb">/</div>
+
+    <div class="actions" style="margin:12px 0">
+      <button class="btn dark" onclick="goFileParent()" data-i18n="parent_folder">⬆ Dossier parent</button>
+      <label class="btn amber" style="cursor:pointer">
+        <span data-i18n="upload">Upload</span>
+        <input id="fileUploadInput" type="file" style="display:none" onchange="uploadSelectedFile()">
+      </label>
+      <a class="btn dark" id="fileDownloadBtn" href="#" target="_blank" style="display:none" data-i18n="download">Télécharger</a>
+    </div>
+
+    <div class="file-manager">
+      <div class="panel card">
+        <div class="panel-title"><h3 data-i18n="explorer">Explorateur</h3><span class="chip" id="fileCount">0 élément</span></div>
+        <div class="file-list" id="fileList"><div class="muted">Chargement...</div></div>
+      </div>
+
+      <div class="panel card file-editor">
+        <div class="panel-title">
+          <div>
+            <h3 id="fileEditorTitle">Aucun fichier sélectionné</h3>
+            <span class="muted" id="fileEditorMeta">Sélectionne un fichier éditable.</span>
+          </div>
+          <div class="actions">
+            <button class="btn red" onclick="saveCurrentFile()" data-i18n="save">Sauvegarder</button>
+            <button class="btn dark" onclick="renameCurrentFile()">Renommer</button>
+            <button class="btn dark" onclick="deleteCurrentFile()" data-i18n="delete">Supprimer</button>
+          </div>
+        </div>
+        <textarea id="fileEditor" placeholder="Contenu du fichier..." disabled></textarea>
+      </div>
+    </div>
+
+    <div class="console" id="fileManagerStatus" style="margin-top:14px;min-height:120px">Gestionnaire prêt.</div>
+  </div>
+</section>
+
+
+<section id="logs" class="tab">
+  <div class="two">
+    <div class="panel card">
+      <div class="panel-title">
+        <h3>Logs panel</h3>
+        <button class="btn dark" onclick="loadLogs()" data-i18n="refresh">Rafraîchir</button>
+      </div>
+      <div class="console" id="logsOut">Chargement...</div>
+    </div>
+
+    <div class="panel card">
+      <div class="panel-title">
+        <h3>Backups</h3>
+        <button class="btn red" onclick="backup()" data-i18n="create_backup">Créer un backup</button>
+      </div>
+      <button class="btn dark" onclick="listBackups()" data-i18n="list_backups">Lister les backups</button>
+      <br><br>
+      <div class="console" id="backupsOut">Aucun backup chargé.</div>
+    </div>
+  </div>
+
+  <br>
+
+  <div class="panel card">
+    <div class="panel-title">
+      <div>
+        <h3>Logs Chat Live</h3>
+        <span class="muted" id="chatLogsLiveFile">Dernier fichier .log HumanitZ</span>
+      </div>
+      <div class="actions">
+        <button class="btn red" onclick="loadChatLogsLatest()" data-i18n="load_latest_log">Charger dernier log</button>
+        <button class="btn dark" onclick="toggleChatLogsLive()" data-i18n="live_toggle">Live ON/OFF</button>
+        <button class="btn dark" onclick="clearChatLogsLive()" data-i18n="clear">Vider</button>
+      </div>
+    </div>
+    <div class="console" id="chatLogsLiveOut" style="min-height:360px">Clique sur Charger dernier log.</div>
+    <div class="muted" id="chatLogsLiveStatus" style="margin-top:10px" data-i18n="live_stopped">Live arrêté.</div>
+  </div>
+</section>
+
+
+
+<section id="autorestart" class="tab">
+  <div class="panel card">
+    <div class="panel-title">
+      <div>
+        <span class="eyebrow">⏱ Planification serveur</span>
+        <h3>Auto Restart</h3>
+        <p class="muted">Section dédiée au redémarrage automatique du serveur HumanitZ.</p>
+      </div>
+      <div class="actions">
+        <button class="btn red" onclick="saveAutoRestart()" data-i18n="save">Sauvegarder</button>
+        <button class="btn dark" onclick="loadAutoRestart()" data-i18n="reload">Recharger</button>
+      </div>
+    </div>
+
+    <div class="formgrid">
+      <div class="toggle-row">
+        <label data-i18n="enable_auto_restart">Activer le redémarrage auto</label>
+        <label class="switch"><input id="auto_restart_enabled" type="checkbox"><span class="slider"></span></label>
+        <span class="bool-state" id="auto_restart_state">FALSE</span>
+      </div>
+
+      <div>
+        <label data-i18n="time_1">Heure 1</label>
+        <input id="restart_time_1" placeholder="ex: 04:00">
+      </div>
+
+      <div>
+        <label data-i18n="time_2">Heure 2</label>
+        <input id="restart_time_2" placeholder="ex: 12:00">
+      </div>
+
+      <div>
+        <label data-i18n="time_3">Heure 3</label>
+        <input id="restart_time_3" placeholder="ex: 18:00">
+      </div>
+
+      <div>
+        <label data-i18n="time_4">Heure 4</label>
+        <input id="restart_time_4" placeholder="ex: 23:30">
+      </div>
+
+      <div>
+        <label data-i18n="warning_minutes">Prévenir combien de minutes avant</label>
+        <input id="auto_restart_warning_minutes" type="number" min="1" max="60" value="10">
+      </div>
+
+      <div class="toggle-row">
+        <label data-i18n="reset_spawners">Reset spawners avant sauvegarde</label>
+        <label class="switch"><input id="reset_spawners_before_save" type="checkbox"><span class="slider"></span></label>
+        <span class="bool-state" id="reset_spawners_state">FALSE</span>
+      </div>
+    </div>
+
+    <div class="muted" id="autoRestartStatus" style="margin-top:12px" data-i18n="scheduler_waiting">Scheduler en attente...</div>
+
+    <p class="muted" style="margin-top:12px;color:#ffb86b" data-i18n="server_must_be_offline_install">⚠ Le serveur doit être OFFLINE avant installation ou mise à jour.</p>
+    <div class="actions" style="margin-top:14px">
+      <button class="btn amber" onclick="testAutoRestart()" data-i18n="test_1_min">Test 1 minute</button>
+    </div>
+  </div>
+</section>
+
+
+
+<section id="watchdog" class="tab">
+  <div class="panel card">
+    <div class="panel-title">
+      <div>
+        <span class="eyebrow" data-i18n="watchdog_eyebrow">🛡 Surveillance serveur</span>
+        <h3 data-i18n="watchdog_title">Watchdog</h3>
+        <p class="muted" data-i18n="watchdog_desc">Relance automatiquement HumanitZ si le processus crash ou se ferme sans action volontaire.</p>
+      </div>
+      <div class="actions">
+        <button class="btn red" onclick="saveWatchdog()" data-i18n="save">Sauvegarder</button>
+        <button class="btn dark" onclick="loadWatchdog()" data-i18n="reload">Recharger</button>
+      </div>
+    </div>
+
+    <div class="formgrid">
+      <div class="toggle-row">
+        <label data-i18n="enable_watchdog">Activer le Watchdog</label>
+        <label class="switch"><input id="watchdog_enabled" type="checkbox"><span class="slider"></span></label>
+        <span class="bool-state" id="watchdog_state">FALSE</span>
+      </div>
+
+      <div>
+        <label data-i18n="check_interval">Vérification toutes les X secondes</label>
+        <input id="watchdog_interval" type="number" min="2" max="60" value="5">
+      </div>
+
+      <div>
+        <label data-i18n="relaunch_delay">Délai avant relance après crash</label>
+        <input id="watchdog_relaunch_delay" type="number" min="1" max="120" value="5">
+      </div>
+    </div>
+
+    <div class="grid" style="margin-top:16px">
+      <div class="card">
+        <h3 data-i18n="status">Statut</h3>
+        <div class="metric" id="watchdogRunning">--</div>
+        <div class="muted" data-i18n="server_process_state">État du processus serveur</div>
+      </div>
+      <div class="card">
+        <h3 data-i18n="restart_count">Relances</h3>
+        <div class="metric" id="watchdogRestartCount">0</div>
+        <div class="muted" data-i18n="automatic_restarts_done">Relances automatiques effectuées</div>
+      </div>
+      <div class="card">
+        <h3 data-i18n="last_check">Dernier contrôle</h3>
+        <div class="metric" id="watchdogLastCheck" style="font-size:20px">--</div>
+        <div class="muted" data-i18n="timestamp">Horodatage</div>
+      </div>
+    </div>
+
+    <div class="console" id="watchdogStatus" style="margin-top:14px;min-height:120px" data-i18n="watchdog_loading">Chargement watchdog...</div>
+
+    <div class="actions" style="margin-top:14px">
+      <button class="btn amber" onclick="testWatchdog()" data-i18n="test_config">Tester la configuration</button>
+    </div>
+  </div>
+</section>
+
+
+<section id="automessages" class="tab">
+  <div class="panel card">
+    <div class="panel-title">
+      <div>
+        <span class="eyebrow" data-i18n="auto_messages_eyebrow">📢 Messages serveur</span>
+        <h3 data-i18n="auto_messages_title">Auto Messages</h3>
+        <p class="muted" data-i18n="auto_messages_desc">Envoie automatiquement des messages globaux en jeu via RCON avec la commande admin &lt;message&gt;.</p>
+      </div>
+      <div class="actions">
+        <button class="btn red" onclick="saveAutoMessages()" data-i18n="save">Sauvegarder</button>
+        <button class="btn dark" onclick="loadAutoMessages()" data-i18n="reload">Recharger</button>
+      </div>
+    </div>
+
+    <div class="formgrid">
+      <div class="toggle-row">
+        <label data-i18n="enable_auto_messages">Activer Auto Messages</label>
+        <label class="switch"><input id="auto_messages_enabled" type="checkbox"><span class="slider"></span></label>
+        <span class="bool-state" id="auto_messages_state">FALSE</span>
+      </div>
+
+      <div>
+        <label data-i18n="message_interval">Intervalle d'envoi en minutes</label>
+        <input id="auto_messages_interval" type="number" min="1" max="240" value="15">
+      </div>
+
+      <div>
+        <label data-i18n="send_mode">Mode d'envoi</label>
+        <select id="auto_messages_mode">
+          <option value="rotation" data-i18n="rotation">Rotation automatique</option>
+          <option value="random" data-i18n="random">Aléatoire</option>
+          <option value="fixed" data-i18n="fixed">Toujours le premier message</option>
+        </select>
+      </div>
+    </div>
+
+    <div style="margin-top:16px">
+      <label data-i18n="messages_one_line">Messages, un par ligne</label>
+      <textarea id="auto_messages_list" rows="8" data-i18n-placeholder="auto_messages_placeholder" placeholder="Bienvenue sur HumanitZ !&#10;Discord : discord.gg/xxxxx&#10;Respectez les règles du serveur."></textarea>
+    </div>
+
+    <div class="actions" style="margin-top:14px">
+      <button class="btn amber" onclick="testAutoMessages()" data-i18n="send_test_now">Envoyer un test maintenant</button>
+    </div>
+
+    <div class="grid" style="margin-top:16px">
+      <div class="card">
+        <h3 data-i18n="last_message">Dernier message</h3>
+        <div class="metric" id="autoMsgLast" style="font-size:20px">--</div>
+        <div class="muted" data-i18n="message_sent">Message envoyé</div>
+      </div>
+      <div class="card">
+        <h3 data-i18n="next_send">Prochain envoi</h3>
+        <div class="metric" id="autoMsgNext" style="font-size:20px">--</div>
+        <div class="muted" data-i18n="forecast">Prévision</div>
+      </div>
+      <div class="card">
+        <h3 data-i18n="total_sent">Total envoyés</h3>
+        <div class="metric" id="autoMsgCount">0</div>
+        <div class="muted" data-i18n="since_panel_start">Depuis le lancement du panel</div>
+      </div>
+    </div>
+
+    <div class="console" id="autoMessagesStatus" style="margin-top:14px;min-height:170px" data-i18n="auto_messages_loading">Chargement Auto Messages...</div>
+  </div>
+</section>
+
+
+<section id="chatmoderation" class="tab">
+  <div class="panel card">
+    <div class="panel-title">
+      <div>
+        <span class="eyebrow">🛡 Surveillance chat</span>
+        <h3 data-i18n="moderation">Modération Chat</h3>
+        <p class="muted">Surveille les logs de chat HumanitZ, détecte les mots interdits, avertit puis kick via RCON.</p>
+      </div>
+      <div class="actions">
+        <button class="btn red" onclick="saveChatModeration()" data-i18n="save">Sauvegarder</button>
+        <button class="btn dark" onclick="loadChatModeration()" data-i18n="reload">Recharger</button>
+      </div>
+    </div>
+
+    <div class="formgrid">
+      <div class="toggle-row">
+        <label data-i18n="enable_chat_moderation">Activer la modération chat</label>
+        <label class="switch"><input id="chat_moderation_enabled" type="checkbox"><span class="slider"></span></label>
+        <span class="bool-state" id="chat_moderation_state">FALSE</span>
+      </div>
+
+      <div class="toggle-row">
+        <label>Envoyer un avertissement</label>
+        <label class="switch"><input id="chat_warning_enabled" type="checkbox"><span class="slider"></span></label>
+        <span class="bool-state" id="chat_warning_state">TRUE</span>
+      </div>
+
+      <div class="toggle-row">
+        <label>Kick automatique</label>
+        <label class="switch"><input id="chat_kick_enabled" type="checkbox"><span class="slider"></span></label>
+        <span class="bool-state" id="chat_kick_state">TRUE</span>
+      </div>
+
+      <div>
+        <label>Avertissements avant kick</label>
+        <input id="chat_warn_before_kick" type="number" min="1" max="10" value="1">
+      </div>
+
+      <div>
+        <label>Reset infractions après X minutes</label>
+        <input id="chat_infraction_reset_minutes" type="number" min="1" max="1440" value="60">
+      </div>
+    </div>
+
+    <div style="margin-top:16px">
+      <label>Mots interdits, un par ligne</label>
+      <textarea id="chat_banned_words" rows="9" placeholder="cheater&#10;noob&#10;spam"></textarea>
+    </div>
+
+    <div class="actions" style="margin-top:14px">
+      <button class="btn amber" onclick="testChatModeration()">Tester une sanction</button>
+    </div>
+
+    <div class="grid" style="margin-top:16px">
+      <div class="card"><h3>Mots surveillés</h3><div class="metric" id="chatWordCount">0</div><div class="muted">dans mots_interdits.txt</div></div>
+      <div class="card"><h3>Avertissements</h3><div class="metric" id="chatWarnings">0</div><div class="muted">envoyés via RCON</div></div>
+      <div class="card"><h3>Kicks</h3><div class="metric" id="chatKicks">0</div><div class="muted">joueurs expulsés</div></div>
+      <div class="card"><h3>Détections</h3><div class="metric" id="chatDetections">0</div><div class="muted">mots interdits détectés</div></div>
+    </div>
+
+    <div class="console" id="chatModerationStatus" style="margin-top:14px;min-height:210px" data-i18n="chat_moderation_loading">Chargement modération...</div>
+  </div>
+</section>
+
+</main></div>
+<div class="kbd" id="installUpdateModal">
+  <div class="kbd-box" style="max-width:900px">
+    <div class="panel-title">
+      <div>
+        <h3>Installer / Mise à jour HumanitZ</h3>
+        <span class="muted" data-i18n="install_desc">Le serveur doit être arrêté avant une installation ou une mise à jour.</span>
+      </div>
+      <button class="btn dark" onclick="closeInstallUpdateModal()" data-i18n="close">Fermer</button>
+    </div>
+
+    <div class="formgrid">
+      <div>
+        <label>Dossier d'installation serveur HumanitZ</label>
+        <div class="path-picker">
+          <input id="install_server_dir" placeholder="Ex: D:\Serveurs\HumanitZ">
+          <button class="btn dark browse-btn" onclick="browseFolder('install_server_dir')" type="button" data-i18n="browse">Parcourir</button>
+        </div>
+      </div>
+
+      <div>
+        <label data-i18n="steamcmd_folder">Dossier SteamCMD</label>
+        <div class="path-picker">
+          <input id="install_steamcmd_dir" placeholder="Ex: C:\SteamCMD">
+          <button class="btn dark browse-btn" onclick="browseFolder('install_steamcmd_dir')" type="button" data-i18n="browse">Parcourir</button>
+        </div>
+      </div>
+
+      <div>
+        <label>AppID HumanitZ</label>
+        <input id="install_app_id" value="2728330">
+      </div>
+
+      <div class="toggle-row">
+        <label>Validate fichiers SteamCMD</label>
+        <label class="switch"><input id="install_validate" type="checkbox" checked><span class="slider"></span></label>
+        <span class="bool-state on">TRUE</span>
+      </div>
+    </div>
+
+    <div class="actions" style="margin-top:14px">
+      <button class="btn red" onclick="startInstallUpdate()" data-i18n="launch_install_update">Lancer installation / mise à jour</button>
+      <button class="btn dark" onclick="loadInstallUpdateStatus()" data-i18n="refresh_status">Rafraîchir statut</button>
+    </div>
+
+    <div class="console" id="installUpdateConsole" style="margin-top:14px;min-height:320px">Prêt.</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div><div class="kbd" id="palette"><div class="kbd-box"><div class="panel-title"><h3 data-i18n="action_palette">Palette d’actions</h3><button class="btn dark" onclick="togglePalette(false)" data-i18n="close">Fermer</button></div><input id="paletteSearch" data-i18n-placeholder="action_search_placeholder" placeholder="Rechercher une action..."><div class="kbd-list" id="paletteList"></div></div></div>
+<script>
+
+async function authFetch(url,opt={}){
+  const r=await fetch(url,{headers:{'Content-Type':'application/json'},...opt});
+  let j={};
+  try{j=await r.json()}catch(e){}
+  if(!r.ok)throw new Error(j.detail||j.error||'Erreur');
+  return j;
+}
+function showAuthError(msg){authError.textContent=msg||''}
+function showLogin(){document.body.classList.add('auth-active');document.body.classList.remove('server-select-active');setTimeout(applyLang,0);authOverlay.style.display='grid';loginView.style.display='block';changePasswordView.style.display='none'}
+function showPasswordChange(){document.body.classList.add('auth-active');document.body.classList.remove('server-select-active');setTimeout(applyLang,0);authOverlay.style.display='grid';loginView.style.display='none';changePasswordView.style.display='block'}
+function hideAuth(){authOverlay.style.display='none';document.body.classList.remove('auth-active')}
+
+let editingServerId=null;
+let serversCache=[];
+async function loadServers(){
+  const j=await authFetch('/api/servers');
+  const cards=document.getElementById('serverCards');
+  serversCache=j.servers||[];
+  if(!cards)return j;
+  cards.innerHTML=(j.servers||[]).map(s=>`
+    <div class="server-card ${s.active?'active':''}">
+      <h3>${esc(s.name||'Server')}</h3>
+      <div class="muted">RCON: ${esc(s.rcon_ip||'127.0.0.1')}:${esc(s.rcon_port||'8888')}</div>
+      <div class="muted">${t('server_folder')}: ${esc(s.server_dir||t('not_configured'))}</div>
+      <div class="server-card-actions">
+        <button class="btn red" onclick="selectServer('${esc(s.id)}')">${t('open')}</button>
+        <button class=\"btn dark\" onclick=\"editServerByIndex(${serversCache.findIndex(x=>x.id===s.id)})\">${t('edit')}</button>
+        <button class="btn dark" onclick="deleteServer('${esc(s.id)}')">${t('delete')}</button>
+      </div>
+    </div>
+  `).join('');
+  const active=(j.servers||[]).find(s=>s.active);
+  if(active&&document.getElementById('activeServerName')){activeServerName.dataset.serverName=(active.name||active.id);activeServerName.textContent=t('active_server')+' : '+(active.name||active.id);}
+  return j;
+}
+async function showServerSelector(){document.body.classList.add('server-select-active');document.body.classList.remove('auth-active');setTimeout(applyLang,0);
+  serverSelectOverlay.style.display='grid';
+  if(document.getElementById('addServerForm')) addServerForm.style.display='none';
+  await loadServers();
+}
+function hideServerSelector(){serverSelectOverlay.style.display='none';document.body.classList.remove('server-select-active')}
+
+async function browseFolderMS(inputId){
+  try{
+    const j=await authFetch('/api/browse-folder',{method:'POST',body:JSON.stringify({})});
+    if(j.path){
+      const el=document.getElementById(inputId);
+      if(el)el.value=j.path;
+      return;
+    }
+  }catch(e){
+    try{
+      const r=await fetch('/api/browse-folder');
+      const j=await r.json();
+      if(j.path){
+        const el=document.getElementById(inputId);
+        if(el)el.value=j.path;
+        return;
+      }
+    }catch(e2){}
+    const box=document.getElementById('serverSelectError');
+    if(box)box.textContent=e.message||'Impossible d’ouvrir le sélecteur de dossier';
+    else alert(e.message||'Impossible d’ouvrir le sélecteur de dossier');
+  }
+}
+
+function openAddServer(){
+  editingServerId=null;
+  addServerForm.style.display='block';
+  ms_name.value='';
+  ms_server_dir.value='';
+  ms_steamcmd_dir.value='';
+  ms_rcon_ip.value='127.0.0.1';
+  ms_rcon_port.value='8888';
+  ms_rcon_password.value='';
+  ms_port.value='7777';
+  ms_query_port.value='27015';
+}
+function closeAddServer(){addServerForm.style.display='none'}
+function editServerByIndex(i){const s=serversCache[i];if(s)editServer(s)}
+function editServer(s){
+  editingServerId=s.id;
+  addServerForm.style.display='block';
+  ms_name.value=s.name||'';
+  ms_server_dir.value=s.server_dir||'';
+  ms_steamcmd_dir.value=s.steamcmd_dir||'';
+  ms_rcon_ip.value=s.rcon_ip||'127.0.0.1';
+  ms_rcon_port.value=s.rcon_port||'8888';
+  ms_rcon_password.value='';
+  ms_port.value=s.port||'7777';
+  ms_query_port.value=s.query_port||'27015';
+}
+async function saveServerProfile(){
+  serverSelectError.textContent='';
+  try{
+    const body={
+      id:editingServerId,
+      name:ms_name.value.trim()||'Nouveau serveur',
+      server_dir:ms_server_dir.value.trim(),
+      steamcmd_dir:ms_steamcmd_dir.value.trim(),
+      rcon_ip:ms_rcon_ip.value.trim()||'127.0.0.1',
+      rcon_port:ms_rcon_port.value.trim()||'8888',
+      port:ms_port.value.trim()||'7777',
+      query_port:ms_query_port.value.trim()||'27015'
+    };
+    if(!editingServerId || ms_rcon_password.value){
+      body.rcon_password=ms_rcon_password.value;
+    }
+    await authFetch('/api/servers',{method:'POST',body:JSON.stringify(body)});
+    closeAddServer();
+    await loadServers();
+  }catch(e){serverSelectError.textContent=e.message}
+}
+async function selectServer(id){
+  serverSelectError.textContent='';
+  try{
+    await authFetch('/api/servers/active',{method:'POST',body:JSON.stringify({id})});
+    sessionStorage.setItem('hz_server_selected','1');
+    hideServerSelector();
+    location.reload();
+  }catch(e){serverSelectError.textContent=e.message}
+}
+async function deleteServer(id){
+  if(!confirm('Supprimer ce serveur de la liste ?'))return;
+  try{
+    const r=await fetch('/api/servers/'+encodeURIComponent(id),{method:'DELETE'});
+    if(!r.ok){const j=await r.json();throw new Error(j.detail||j.error||'Erreur')}
+    await loadServers();
+  }catch(e){serverSelectError.textContent=e.message}
+}
+
+async function checkPanelAuth(){
+  try{
+    const j=await authFetch('/api/auth/status');
+    if(!j.authenticated){showLogin();return false}
+    if(j.must_change){showPasswordChange();return false}
+    hideAuth();
+    await loadServers();
+
+    if(sessionStorage.getItem('hz_server_selected')!=='1'){
+      await showServerSelector();
+    }else{
+      serverSelectOverlay.style.display='none';
+    }
+    return true;
+  }catch(e){showLogin();return false}
+}
+async function loginPanel(){
+  showAuthError('');
+  try{
+    const j=await authFetch('/api/auth/login',{method:'POST',body:JSON.stringify({username:authUsername.value.trim(),password:authPassword.value})});
+    if(j.must_change)showPasswordChange();else{hideAuth();location.reload()}
+  }catch(e){showAuthError(e.message)}
+}
+async function changePanelPassword(){
+  showAuthError('');
+  if(newPassword.value!==confirmPassword.value){showAuthError('Les deux nouveaux mots de passe ne correspondent pas');return}
+  try{
+    await authFetch('/api/auth/change-password',{method:'POST',body:JSON.stringify({current_password:currentPassword.value,new_password:newPassword.value})});
+    hideAuth();location.reload();
+  }catch(e){showAuthError(e.message)}
+}
+async function logoutPanel(){sessionStorage.removeItem('hz_server_selected');
+  try{await authFetch('/api/auth/logout',{method:'POST',body:JSON.stringify({})})}catch(e){}
+  location.reload();
+}
+setTimeout(checkPanelAuth,200);
+
+
+const I18N={"fr": {"dashboard": "Tableau de bord", "console": "Console & RCON", "players": "Players", "config": "Configuration", "files": "Fichiers", "logs": "Logs & backups", "autorestart": "Auto Restart", "watchdog": "Watchdog", "automessages": "Auto Messages", "moderation": "Modération Chat", "logout": "Déconnexion", "back_to_panel": "Retour au panel", "change_server": "Changer serveur", "server_choice_tag": "Choix du serveur", "choose_server": "Choisir un serveur", "choose_server_desc": "Sélectionne le serveur à gérer ou ajoute un nouveau serveur.", "add": "Add", "open": "Ouvrir", "edit": "Modifier", "delete": "Supprimer", "cancel": "Annuler", "save": "Sauvegarder", "reload": "Recharger", "refresh": "Rafraîchir", "clear": "Vider", "close": "Fermer", "browse": "Parcourir", "upload": "Upload", "download": "Télécharger", "rename": "Renommer", "start": "▶ Démarrer", "stop": "■ Arrêter", "restart": "↻ Redémarrer", "install_update": "⬇ Installer / Mise à jour", "online": "Online", "offline": "Offline", "system_status": "État système", "server_overview": "Aperçu du serveur", "cpu": "CPU", "memory": "Mémoire", "disk": "Disque", "players_online": "Joueurs en ligne", "connected_players": "Joueurs connectés", "no_players_online": "Aucun joueur en ligne", "recent_activity": "Activité récente", "usage_graph": "Graphique d'utilisation", "server_address": "Adresse RCON", "game_port": "Port jeu", "panel_uptime": "Uptime panel", "security": "Sécurité", "quick_commands": "Commandes rapides", "send_command": "Envoyer commande", "rcon_console": "Console RCON", "command_placeholder": "Commande RCON...", "players_title": "Players", "global_admin_message": "Message global admin", "send_global": "Envoyer global", "connected": "Connectés", "last_refresh": "Dernier refresh", "connected_players_list": "Joueurs connectés", "raw_response": "Réponse brute", "banned": "Bannis", "kick": "Kick", "ban": "Ban", "message": "Message", "configuration_panel": "Configuration panel", "server_folder": "Dossier serveur HumanitZ", "steamcmd_folder": "Dossier SteamCMD", "rcon_ip": "IP RCON", "rcon_port": "Port RCON", "rcon_password": "Mot de passe RCON", "server_settings": "Paramètres serveur", "game_settings": "GameServerSettings.ini", "save_ini": "Sauvegarder INI", "world_settings": "World settings", "browse_folder": "Parcourir", "file_manager": "Gestionnaire de fichiers", "new_file": "Nouveau fichier", "new_folder": "Nouveau dossier", "parent_folder": "Dossier parent", "explorer": "Explorateur", "no_file_selected": "Aucun fichier sélectionné", "save_file": "Sauvegarder fichier", "file_ready": "Gestionnaire prêt.", "panel_logs": "Logs panel", "backups": "Backups", "create_backup": "Créer un backup", "list_backups": "Lister les backups", "chat_logs_live": "Logs Chat Live", "load_latest_log": "Charger dernier log", "live_toggle": "Live ON/OFF", "auto_restart_title": "Auto Restart", "auto_restart_desc": "Section dédiée au redémarrage automatique du serveur HumanitZ.", "enable_auto_restart": "Activer le redémarrage auto", "time_1": "Heure 1", "time_2": "Heure 2", "time_3": "Heure 3", "time_4": "Heure 4", "warning_minutes": "Prévenir combien de minutes avant", "reset_spawners": "Reset spawners avant sauvegarde", "test_1_min": "Test 1 minute", "scheduler_waiting": "Scheduler en attente...", "watchdog_title": "Watchdog", "watchdog_desc": "Relance automatiquement HumanitZ si le processus crash ou se ferme sans action volontaire.", "enable_watchdog": "Activer le Watchdog", "check_interval": "Vérification toutes les X secondes", "relaunch_delay": "Délai avant relance après crash", "status": "Statut", "restart_count": "Relances", "last_check": "Dernier contrôle", "test_config": "Tester la configuration", "auto_messages_title": "Auto Messages", "auto_messages_desc": "Envoie automatiquement des messages globaux en jeu via RCON avec la commande admin <message>.", "enable_auto_messages": "Activer Auto Messages", "message_interval": "Intervalle d'envoi en minutes", "send_mode": "Mode d'envoi", "rotation": "Rotation automatique", "random": "Aléatoire", "fixed": "Toujours le premier message", "messages_one_line": "Messages, un par ligne", "send_test_now": "Envoyer un test maintenant", "last_message": "Dernier message", "next_send": "Prochain envoi", "total_sent": "Total envoyés", "chat_moderation_title": "Modération Chat", "chat_moderation_desc": "Surveille les logs de chat HumanitZ, détecte les mots interdits, avertit puis kick via RCON.", "enable_chat_moderation": "Activer la modération chat", "send_warning": "Envoyer un avertissement", "auto_kick": "Kick automatique", "warnings_before_kick": "Avertissements avant kick", "reset_infractions": "Reset infractions après X minutes", "banned_words": "Mots interdits, un par ligne", "test_punishment": "Tester une sanction", "watched_words": "Mots surveillés", "warnings": "Avertissements", "kicks": "Kicks", "detections": "Détections", "install_title": "Installer / Mise à jour HumanitZ", "install_desc": "Le serveur doit être arrêté avant une installation ou une mise à jour.", "install_server_folder": "Dossier d'installation serveur HumanitZ", "app_id": "AppID HumanitZ", "validate_files": "Validate fichiers SteamCMD", "launch_install_update": "Lancer installation / mise à jour", "login_title": "Connexion au panel", "login_subtitle": "Identifiant provisoire : admin · mot de passe provisoire : 0000", "username": "Identifiant", "password": "Mot de passe", "login_btn": "Se connecter", "change_password": "Changer le mot de passe provisoire", "change_password_warning": "Le mot de passe provisoire 0000 doit être remplacé avant d’utiliser le panel.", "current_password": "Mot de passe actuel", "new_password": "Nouveau mot de passe", "confirm_password": "Confirmer le nouveau mot de passe", "save_new_password": "Enregistrer le nouveau mot de passe", "active_server": "Serveur actif", "server_name": "Nom du serveur", "add_edit_server": "Ajouter / modifier un serveur", "query_port": "Query port", "save_server": "Sauvegarder serveur", "not_configured": "non configuré"}, "en": {"dashboard": "Dashboard", "console": "Console & RCON", "players": "Players", "config": "Configuration", "files": "Files", "logs": "Logs & backups", "autorestart": "Auto Restart", "watchdog": "Watchdog", "automessages": "Auto Messages", "moderation": "Chat Moderation", "logout": "Logout", "back_to_panel": "Back to panel", "change_server": "Change server", "server_choice_tag": "Server selection", "choose_server": "Choose a server", "choose_server_desc": "Select the server to manage or add a new server.", "add": "Add", "open": "Open", "edit": "Edit", "delete": "Delete", "cancel": "Cancel", "save": "Save", "reload": "Reload", "refresh": "Refresh", "clear": "Clear", "close": "Close", "browse": "Browse", "upload": "Upload", "download": "Download", "rename": "Rename", "start": "▶ Start", "stop": "■ Stop", "restart": "↻ Restart", "install_update": "⬇ Install / Update", "online": "Online", "offline": "Offline", "system_status": "System status", "server_overview": "Server overview", "cpu": "CPU", "memory": "Memory", "disk": "Disque", "players_online": "Online players", "connected_players": "Connected players", "no_players_online": "No players online", "recent_activity": "Recent activity", "usage_graph": "Usage graph", "server_address": "RCON address", "game_port": "Port jeu", "panel_uptime": "Panel uptime", "security": "Sécurité", "quick_commands": "Quick commands", "send_command": "Send command", "rcon_console": "RCON console", "command_placeholder": "Commande RCON...", "players_title": "Players", "global_admin_message": "Global admin message", "send_global": "Send global", "connected": "Connected", "last_refresh": "Last refresh", "connected_players_list": "Connected players", "raw_response": "Raw response", "banned": "Banned", "kick": "Kick", "ban": "Ban", "message": "Message", "configuration_panel": "Panel configuration", "server_folder": "HumanitZ server folder", "steamcmd_folder": "SteamCMD folder", "rcon_ip": "IP RCON", "rcon_port": "Port RCON", "rcon_password": "RCON password", "server_settings": "Server settings", "game_settings": "GameServerSettings.ini", "save_ini": "Save INI", "world_settings": "World settings", "browse_folder": "Parcourir", "file_manager": "File manager", "new_file": "New file", "new_folder": "New folder", "parent_folder": "Parent folder", "explorer": "Explorateur", "no_file_selected": "No file selected", "save_file": "Save file", "file_ready": "File manager ready.", "panel_logs": "Panel logs", "backups": "Backups", "create_backup": "Create backup", "list_backups": "List backups", "chat_logs_live": "Live Chat Logs", "load_latest_log": "Load latest log", "live_toggle": "Live ON/OFF", "auto_restart_title": "Auto Restart", "auto_restart_desc": "Dedicated section for automatic HumanitZ server restarts.", "enable_auto_restart": "Enable auto restart", "time_1": "Heure 1", "time_2": "Heure 2", "time_3": "Heure 3", "time_4": "Heure 4", "warning_minutes": "Warning minutes before restart", "reset_spawners": "Reset spawners before save", "test_1_min": "Test 1 minute", "scheduler_waiting": "Scheduler waiting...", "watchdog_title": "Watchdog", "watchdog_desc": "Automatically restarts HumanitZ if the process crashes or closes unexpectedly.", "enable_watchdog": "Enable Watchdog", "check_interval": "Check every X seconds", "relaunch_delay": "Delay before relaunch after crash", "status": "Status", "restart_count": "Restarts", "last_check": "Last check", "test_config": "Test configuration", "auto_messages_title": "Auto Messages", "auto_messages_desc": "Automatically sends global in-game messages via RCON with admin <message>.", "enable_auto_messages": "Enable Auto Messages", "message_interval": "Send interval in minutes", "send_mode": "Send mode", "rotation": "Automatic rotation", "random": "Random", "fixed": "Always first message", "messages_one_line": "Messages, one per line", "send_test_now": "Send test now", "last_message": "Last message", "next_send": "Next send", "total_sent": "Total sent", "chat_moderation_title": "Modération Chat", "chat_moderation_desc": "Watches HumanitZ chat logs, detects forbidden words, warns then kicks via RCON.", "enable_chat_moderation": "Enable chat moderation", "send_warning": "Send warning", "auto_kick": "Automatic kick", "warnings_before_kick": "Warnings before kick", "reset_infractions": "Reset infractions after X minutes", "banned_words": "Forbidden words, one per line", "test_punishment": "Test punishment", "watched_words": "Watched words", "warnings": "Warnings", "kicks": "Kicks", "detections": "Detections", "install_title": "Install / Update HumanitZ", "install_desc": "The server must be stopped before installing or updating.", "install_server_folder": "HumanitZ server install folder", "app_id": "AppID HumanitZ", "validate_files": "Validate SteamCMD files", "launch_install_update": "Start install / update", "login_title": "Panel login", "login_subtitle": "Temporary username: admin · temporary password: 0000", "username": "Username", "password": "Password", "login_btn": "Log in", "change_password": "Change temporary password", "change_password_warning": "The temporary password 0000 must be replaced before using the panel.", "current_password": "Current password", "new_password": "New password", "confirm_password": "Confirm new password", "save_new_password": "Save new password", "active_server": "Active server", "server_name": "Server name", "add_edit_server": "Add / edit server", "query_port": "Query port", "save_server": "Save server", "not_configured": "not configured"}, "es": {"dashboard": "Panel", "console": "Console & RCON", "players": "Jugadores", "config": "Configuración", "files": "Archivos", "logs": "Logs & backups", "autorestart": "Auto Restart", "watchdog": "Watchdog", "automessages": "Auto Messages", "moderation": "Moderación Chat", "logout": "Cerrar sesión", "back_to_panel": "Volver al panel", "change_server": "Cambiar servidor", "server_choice_tag": "Server selection", "choose_server": "Elegir un servidor", "choose_server_desc": "Selecciona el servidor a administrar o añade uno nuevo.", "add": "Add", "open": "Abrir", "edit": "Editar", "delete": "Eliminar", "cancel": "Cancelar", "save": "Guardar", "reload": "Recargar", "refresh": "Actualizar", "clear": "Clear", "close": "Close", "browse": "Examinar", "upload": "Upload", "download": "Download", "rename": "Rename", "start": "▶ Iniciar", "stop": "■ Detener", "restart": "↻ Reiniciar", "install_update": "⬇ Instalar / Actualizar", "online": "Online", "offline": "Offline", "system_status": "System status", "server_overview": "Server overview", "cpu": "CPU", "memory": "Memory", "disk": "Disque", "players_online": "Online players", "connected_players": "Connected players", "no_players_online": "No players online", "recent_activity": "Recent activity", "usage_graph": "Usage graph", "server_address": "RCON address", "game_port": "Port jeu", "panel_uptime": "Panel uptime", "security": "Sécurité", "quick_commands": "Quick commands", "send_command": "Send command", "rcon_console": "RCON console", "command_placeholder": "Commande RCON...", "players_title": "Players", "global_admin_message": "Global admin message", "send_global": "Send global", "connected": "Connected", "last_refresh": "Last refresh", "connected_players_list": "Connected players", "raw_response": "Raw response", "banned": "Banned", "kick": "Kick", "ban": "Ban", "message": "Message", "configuration_panel": "Panel configuration", "server_folder": "Carpeta del servidor", "steamcmd_folder": "Carpeta SteamCMD", "rcon_ip": "IP RCON", "rcon_port": "Port RCON", "rcon_password": "Contraseña RCON", "server_settings": "Server settings", "game_settings": "GameServerSettings.ini", "save_ini": "Save INI", "world_settings": "World settings", "browse_folder": "Parcourir", "file_manager": "File manager", "new_file": "New file", "new_folder": "New folder", "parent_folder": "Parent folder", "explorer": "Explorateur", "no_file_selected": "No file selected", "save_file": "Save file", "file_ready": "File manager ready.", "panel_logs": "Panel logs", "backups": "Backups", "create_backup": "Create backup", "list_backups": "List backups", "chat_logs_live": "Live Chat Logs", "load_latest_log": "Load latest log", "live_toggle": "Live ON/OFF", "auto_restart_title": "Auto Restart", "auto_restart_desc": "Dedicated section for automatic HumanitZ server restarts.", "enable_auto_restart": "Enable auto restart", "time_1": "Heure 1", "time_2": "Heure 2", "time_3": "Heure 3", "time_4": "Heure 4", "warning_minutes": "Warning minutes before restart", "reset_spawners": "Reset spawners before save", "test_1_min": "Test 1 minute", "scheduler_waiting": "Scheduler waiting...", "watchdog_title": "Watchdog", "watchdog_desc": "Automatically restarts HumanitZ if the process crashes or closes unexpectedly.", "enable_watchdog": "Enable Watchdog", "check_interval": "Check every X seconds", "relaunch_delay": "Delay before relaunch after crash", "status": "Status", "restart_count": "Restarts", "last_check": "Last check", "test_config": "Test configuration", "auto_messages_title": "Auto Messages", "auto_messages_desc": "Automatically sends global in-game messages via RCON with admin <message>.", "enable_auto_messages": "Enable Auto Messages", "message_interval": "Send interval in minutes", "send_mode": "Send mode", "rotation": "Automatic rotation", "random": "Random", "fixed": "Always first message", "messages_one_line": "Messages, one per line", "send_test_now": "Send test now", "last_message": "Last message", "next_send": "Next send", "total_sent": "Total sent", "chat_moderation_title": "Modération Chat", "chat_moderation_desc": "Watches HumanitZ chat logs, detects forbidden words, warns then kicks via RCON.", "enable_chat_moderation": "Enable chat moderation", "send_warning": "Send warning", "auto_kick": "Automatic kick", "warnings_before_kick": "Warnings before kick", "reset_infractions": "Reset infractions after X minutes", "banned_words": "Forbidden words, one per line", "test_punishment": "Test punishment", "watched_words": "Watched words", "warnings": "Warnings", "kicks": "Kicks", "detections": "Detections", "install_title": "Install / Update HumanitZ", "install_desc": "The server must be stopped before installing or updating.", "install_server_folder": "HumanitZ server install folder", "app_id": "AppID HumanitZ", "validate_files": "Validate SteamCMD files", "launch_install_update": "Start install / update", "login_title": "Inicio de sesión", "login_subtitle": "Temporary username: admin · temporary password: 0000", "username": "Usuario", "password": "Contraseña", "login_btn": "Entrar", "change_password": "Change temporary password", "change_password_warning": "The temporary password 0000 must be replaced before using the panel.", "current_password": "Current password", "new_password": "New password", "confirm_password": "Confirm new password", "save_new_password": "Save new password", "active_server": "Active server", "server_name": "Server name", "add_edit_server": "Add / edit server", "query_port": "Query port", "save_server": "Guardar servidor", "not_configured": "not configured"}, "de": {"dashboard": "Dashboard", "console": "Console & RCON", "players": "Spieler", "config": "Konfiguration", "files": "Dateien", "logs": "Logs & backups", "autorestart": "Auto Restart", "watchdog": "Watchdog", "automessages": "Auto Messages", "moderation": "Chat Moderation", "logout": "Abmelden", "back_to_panel": "Zurück zum Panel", "change_server": "Server wechseln", "server_choice_tag": "Server selection", "choose_server": "Server auswählen", "choose_server_desc": "Select the server to manage or add a new server.", "add": "Add", "open": "Öffnen", "edit": "Bearbeiten", "delete": "Löschen", "cancel": "Abbrechen", "save": "Speichern", "reload": "Neu laden", "refresh": "Aktualisieren", "clear": "Clear", "close": "Close", "browse": "Durchsuchen", "upload": "Upload", "download": "Download", "rename": "Rename", "start": "▶ Starten", "stop": "■ Stoppen", "restart": "↻ Neustarten", "install_update": "⬇ Installieren / Aktualisieren", "online": "Online", "offline": "Offline", "system_status": "System status", "server_overview": "Server overview", "cpu": "CPU", "memory": "Memory", "disk": "Disque", "players_online": "Online players", "connected_players": "Connected players", "no_players_online": "No players online", "recent_activity": "Recent activity", "usage_graph": "Usage graph", "server_address": "RCON address", "game_port": "Port jeu", "panel_uptime": "Panel uptime", "security": "Sécurité", "quick_commands": "Quick commands", "send_command": "Send command", "rcon_console": "RCON console", "command_placeholder": "Commande RCON...", "players_title": "Players", "global_admin_message": "Global admin message", "send_global": "Send global", "connected": "Connected", "last_refresh": "Last refresh", "connected_players_list": "Connected players", "raw_response": "Raw response", "banned": "Banned", "kick": "Kick", "ban": "Ban", "message": "Message", "configuration_panel": "Panel configuration", "server_folder": "HumanitZ server folder", "steamcmd_folder": "SteamCMD folder", "rcon_ip": "IP RCON", "rcon_port": "Port RCON", "rcon_password": "RCON password", "server_settings": "Server settings", "game_settings": "GameServerSettings.ini", "save_ini": "Save INI", "world_settings": "World settings", "browse_folder": "Parcourir", "file_manager": "File manager", "new_file": "New file", "new_folder": "New folder", "parent_folder": "Parent folder", "explorer": "Explorateur", "no_file_selected": "No file selected", "save_file": "Save file", "file_ready": "File manager ready.", "panel_logs": "Panel logs", "backups": "Backups", "create_backup": "Create backup", "list_backups": "List backups", "chat_logs_live": "Live Chat Logs", "load_latest_log": "Load latest log", "live_toggle": "Live ON/OFF", "auto_restart_title": "Auto Restart", "auto_restart_desc": "Dedicated section for automatic HumanitZ server restarts.", "enable_auto_restart": "Enable auto restart", "time_1": "Heure 1", "time_2": "Heure 2", "time_3": "Heure 3", "time_4": "Heure 4", "warning_minutes": "Warning minutes before restart", "reset_spawners": "Reset spawners before save", "test_1_min": "Test 1 minute", "scheduler_waiting": "Scheduler waiting...", "watchdog_title": "Watchdog", "watchdog_desc": "Automatically restarts HumanitZ if the process crashes or closes unexpectedly.", "enable_watchdog": "Enable Watchdog", "check_interval": "Check every X seconds", "relaunch_delay": "Delay before relaunch after crash", "status": "Status", "restart_count": "Restarts", "last_check": "Last check", "test_config": "Test configuration", "auto_messages_title": "Auto Messages", "auto_messages_desc": "Automatically sends global in-game messages via RCON with admin <message>.", "enable_auto_messages": "Enable Auto Messages", "message_interval": "Send interval in minutes", "send_mode": "Send mode", "rotation": "Automatic rotation", "random": "Random", "fixed": "Always first message", "messages_one_line": "Messages, one per line", "send_test_now": "Send test now", "last_message": "Last message", "next_send": "Next send", "total_sent": "Total sent", "chat_moderation_title": "Modération Chat", "chat_moderation_desc": "Watches HumanitZ chat logs, detects forbidden words, warns then kicks via RCON.", "enable_chat_moderation": "Enable chat moderation", "send_warning": "Send warning", "auto_kick": "Automatic kick", "warnings_before_kick": "Warnings before kick", "reset_infractions": "Reset infractions after X minutes", "banned_words": "Forbidden words, one per line", "test_punishment": "Test punishment", "watched_words": "Watched words", "warnings": "Warnings", "kicks": "Kicks", "detections": "Detections", "install_title": "Install / Update HumanitZ", "install_desc": "The server must be stopped before installing or updating.", "install_server_folder": "HumanitZ server install folder", "app_id": "AppID HumanitZ", "validate_files": "Validate SteamCMD files", "launch_install_update": "Start install / update", "login_title": "Panel-Anmeldung", "login_subtitle": "Temporary username: admin · temporary password: 0000", "username": "Benutzername", "password": "Passwort", "login_btn": "Anmelden", "change_password": "Change temporary password", "change_password_warning": "The temporary password 0000 must be replaced before using the panel.", "current_password": "Current password", "new_password": "New password", "confirm_password": "Confirm new password", "save_new_password": "Save new password", "active_server": "Active server", "server_name": "Server name", "add_edit_server": "Add / edit server", "query_port": "Query port", "save_server": "Save server", "not_configured": "not configured"}, "it": {"dashboard": "Dashboard", "console": "Console & RCON", "players": "Giocatori", "config": "Configurazione", "files": "File", "logs": "Logs & backups", "autorestart": "Auto Restart", "watchdog": "Watchdog", "automessages": "Auto Messages", "moderation": "Chat Moderation", "logout": "Disconnetti", "back_to_panel": "Torna al panel", "change_server": "Cambia server", "server_choice_tag": "Server selection", "choose_server": "Scegli un server", "choose_server_desc": "Select the server to manage or add a new server.", "add": "Add", "open": "Apri", "edit": "Modifica", "delete": "Elimina", "cancel": "Annulla", "save": "Salva", "reload": "Ricarica", "refresh": "Aggiorna", "clear": "Clear", "close": "Close", "browse": "Sfoglia", "upload": "Upload", "download": "Download", "rename": "Rename", "start": "▶ Avvia", "stop": "■ Arresta", "restart": "↻ Riavvia", "install_update": "⬇ Installa / Aggiorna", "online": "Online", "offline": "Offline", "system_status": "System status", "server_overview": "Server overview", "cpu": "CPU", "memory": "Memory", "disk": "Disque", "players_online": "Online players", "connected_players": "Connected players", "no_players_online": "No players online", "recent_activity": "Recent activity", "usage_graph": "Usage graph", "server_address": "RCON address", "game_port": "Port jeu", "panel_uptime": "Panel uptime", "security": "Sécurité", "quick_commands": "Quick commands", "send_command": "Send command", "rcon_console": "RCON console", "command_placeholder": "Commande RCON...", "players_title": "Players", "global_admin_message": "Global admin message", "send_global": "Send global", "connected": "Connected", "last_refresh": "Last refresh", "connected_players_list": "Connected players", "raw_response": "Raw response", "banned": "Banned", "kick": "Kick", "ban": "Ban", "message": "Message", "configuration_panel": "Panel configuration", "server_folder": "HumanitZ server folder", "steamcmd_folder": "SteamCMD folder", "rcon_ip": "IP RCON", "rcon_port": "Port RCON", "rcon_password": "RCON password", "server_settings": "Server settings", "game_settings": "GameServerSettings.ini", "save_ini": "Save INI", "world_settings": "World settings", "browse_folder": "Parcourir", "file_manager": "File manager", "new_file": "New file", "new_folder": "New folder", "parent_folder": "Parent folder", "explorer": "Explorateur", "no_file_selected": "No file selected", "save_file": "Save file", "file_ready": "File manager ready.", "panel_logs": "Panel logs", "backups": "Backups", "create_backup": "Create backup", "list_backups": "List backups", "chat_logs_live": "Live Chat Logs", "load_latest_log": "Load latest log", "live_toggle": "Live ON/OFF", "auto_restart_title": "Auto Restart", "auto_restart_desc": "Dedicated section for automatic HumanitZ server restarts.", "enable_auto_restart": "Enable auto restart", "time_1": "Heure 1", "time_2": "Heure 2", "time_3": "Heure 3", "time_4": "Heure 4", "warning_minutes": "Warning minutes before restart", "reset_spawners": "Reset spawners before save", "test_1_min": "Test 1 minute", "scheduler_waiting": "Scheduler waiting...", "watchdog_title": "Watchdog", "watchdog_desc": "Automatically restarts HumanitZ if the process crashes or closes unexpectedly.", "enable_watchdog": "Enable Watchdog", "check_interval": "Check every X seconds", "relaunch_delay": "Delay before relaunch after crash", "status": "Status", "restart_count": "Restarts", "last_check": "Last check", "test_config": "Test configuration", "auto_messages_title": "Auto Messages", "auto_messages_desc": "Automatically sends global in-game messages via RCON with admin <message>.", "enable_auto_messages": "Enable Auto Messages", "message_interval": "Send interval in minutes", "send_mode": "Send mode", "rotation": "Automatic rotation", "random": "Random", "fixed": "Always first message", "messages_one_line": "Messages, one per line", "send_test_now": "Send test now", "last_message": "Last message", "next_send": "Next send", "total_sent": "Total sent", "chat_moderation_title": "Modération Chat", "chat_moderation_desc": "Watches HumanitZ chat logs, detects forbidden words, warns then kicks via RCON.", "enable_chat_moderation": "Enable chat moderation", "send_warning": "Send warning", "auto_kick": "Automatic kick", "warnings_before_kick": "Warnings before kick", "reset_infractions": "Reset infractions after X minutes", "banned_words": "Forbidden words, one per line", "test_punishment": "Test punishment", "watched_words": "Watched words", "warnings": "Warnings", "kicks": "Kicks", "detections": "Detections", "install_title": "Install / Update HumanitZ", "install_desc": "The server must be stopped before installing or updating.", "install_server_folder": "HumanitZ server install folder", "app_id": "AppID HumanitZ", "validate_files": "Validate SteamCMD files", "launch_install_update": "Start install / update", "login_title": "Accesso al panel", "login_subtitle": "Temporary username: admin · temporary password: 0000", "username": "Utente", "password": "Password", "login_btn": "Accedi", "change_password": "Change temporary password", "change_password_warning": "The temporary password 0000 must be replaced before using the panel.", "current_password": "Current password", "new_password": "New password", "confirm_password": "Confirm new password", "save_new_password": "Save new password", "active_server": "Active server", "server_name": "Server name", "add_edit_server": "Add / edit server", "query_port": "Query port", "save_server": "Save server", "not_configured": "not configured"}, "pt": {"dashboard": "Painel", "console": "Console & RCON", "players": "Jogadores", "config": "Configuração", "files": "Ficheiros", "logs": "Logs & backups", "autorestart": "Auto Restart", "watchdog": "Watchdog", "automessages": "Auto Messages", "moderation": "Chat Moderation", "logout": "Sair", "back_to_panel": "Voltar ao painel", "change_server": "Mudar servidor", "server_choice_tag": "Server selection", "choose_server": "Escolher servidor", "choose_server_desc": "Select the server to manage or add a new server.", "add": "Add", "open": "Abrir", "edit": "Editar", "delete": "Eliminar", "cancel": "Cancelar", "save": "Guardar", "reload": "Recarregar", "refresh": "Atualizar", "clear": "Clear", "close": "Close", "browse": "Procurar", "upload": "Upload", "download": "Download", "rename": "Rename", "start": "▶ Iniciar", "stop": "■ Parar", "restart": "↻ Reiniciar", "install_update": "⬇ Instalar / Atualizar", "online": "Online", "offline": "Offline", "system_status": "System status", "server_overview": "Server overview", "cpu": "CPU", "memory": "Memory", "disk": "Disque", "players_online": "Online players", "connected_players": "Connected players", "no_players_online": "No players online", "recent_activity": "Recent activity", "usage_graph": "Usage graph", "server_address": "RCON address", "game_port": "Port jeu", "panel_uptime": "Panel uptime", "security": "Sécurité", "quick_commands": "Quick commands", "send_command": "Send command", "rcon_console": "RCON console", "command_placeholder": "Commande RCON...", "players_title": "Players", "global_admin_message": "Global admin message", "send_global": "Send global", "connected": "Connected", "last_refresh": "Last refresh", "connected_players_list": "Connected players", "raw_response": "Raw response", "banned": "Banned", "kick": "Kick", "ban": "Ban", "message": "Message", "configuration_panel": "Panel configuration", "server_folder": "HumanitZ server folder", "steamcmd_folder": "SteamCMD folder", "rcon_ip": "IP RCON", "rcon_port": "Port RCON", "rcon_password": "RCON password", "server_settings": "Server settings", "game_settings": "GameServerSettings.ini", "save_ini": "Save INI", "world_settings": "World settings", "browse_folder": "Parcourir", "file_manager": "File manager", "new_file": "New file", "new_folder": "New folder", "parent_folder": "Parent folder", "explorer": "Explorateur", "no_file_selected": "No file selected", "save_file": "Save file", "file_ready": "File manager ready.", "panel_logs": "Panel logs", "backups": "Backups", "create_backup": "Create backup", "list_backups": "List backups", "chat_logs_live": "Live Chat Logs", "load_latest_log": "Load latest log", "live_toggle": "Live ON/OFF", "auto_restart_title": "Auto Restart", "auto_restart_desc": "Dedicated section for automatic HumanitZ server restarts.", "enable_auto_restart": "Enable auto restart", "time_1": "Heure 1", "time_2": "Heure 2", "time_3": "Heure 3", "time_4": "Heure 4", "warning_minutes": "Warning minutes before restart", "reset_spawners": "Reset spawners before save", "test_1_min": "Test 1 minute", "scheduler_waiting": "Scheduler waiting...", "watchdog_title": "Watchdog", "watchdog_desc": "Automatically restarts HumanitZ if the process crashes or closes unexpectedly.", "enable_watchdog": "Enable Watchdog", "check_interval": "Check every X seconds", "relaunch_delay": "Delay before relaunch after crash", "status": "Status", "restart_count": "Restarts", "last_check": "Last check", "test_config": "Test configuration", "auto_messages_title": "Auto Messages", "auto_messages_desc": "Automatically sends global in-game messages via RCON with admin <message>.", "enable_auto_messages": "Enable Auto Messages", "message_interval": "Send interval in minutes", "send_mode": "Send mode", "rotation": "Automatic rotation", "random": "Random", "fixed": "Always first message", "messages_one_line": "Messages, one per line", "send_test_now": "Send test now", "last_message": "Last message", "next_send": "Next send", "total_sent": "Total sent", "chat_moderation_title": "Modération Chat", "chat_moderation_desc": "Watches HumanitZ chat logs, detects forbidden words, warns then kicks via RCON.", "enable_chat_moderation": "Enable chat moderation", "send_warning": "Send warning", "auto_kick": "Automatic kick", "warnings_before_kick": "Warnings before kick", "reset_infractions": "Reset infractions after X minutes", "banned_words": "Forbidden words, one per line", "test_punishment": "Test punishment", "watched_words": "Watched words", "warnings": "Warnings", "kicks": "Kicks", "detections": "Detections", "install_title": "Install / Update HumanitZ", "install_desc": "The server must be stopped before installing or updating.", "install_server_folder": "HumanitZ server install folder", "app_id": "AppID HumanitZ", "validate_files": "Validate SteamCMD files", "launch_install_update": "Start install / update", "login_title": "Login do painel", "login_subtitle": "Temporary username: admin · temporary password: 0000", "username": "Utilizador", "password": "Palavra-passe", "login_btn": "Entrar", "change_password": "Change temporary password", "change_password_warning": "The temporary password 0000 must be replaced before using the panel.", "current_password": "Current password", "new_password": "New password", "confirm_password": "Confirm new password", "save_new_password": "Save new password", "active_server": "Active server", "server_name": "Server name", "add_edit_server": "Add / edit server", "query_port": "Query port", "save_server": "Save server", "not_configured": "not configured"}, "nl": {"dashboard": "Dashboard", "console": "Console & RCON", "players": "Spelers", "config": "Configuratie", "files": "Bestanden", "logs": "Logs & backups", "autorestart": "Auto Restart", "watchdog": "Watchdog", "automessages": "Auto Messages", "moderation": "Chat Moderation", "logout": "Uitloggen", "back_to_panel": "Terug naar panel", "change_server": "Server wijzigen", "server_choice_tag": "Server selection", "choose_server": "Kies een server", "choose_server_desc": "Select the server to manage or add a new server.", "add": "Add", "open": "Openen", "edit": "Bewerken", "delete": "Verwijderen", "cancel": "Annuleren", "save": "Opslaan", "reload": "Herladen", "refresh": "Vernieuwen", "clear": "Clear", "close": "Close", "browse": "Bladeren", "upload": "Upload", "download": "Download", "rename": "Rename", "start": "▶ Starten", "stop": "■ Stoppen", "restart": "↻ Herstarten", "install_update": "⬇ Installeren / Bijwerken", "online": "Online", "offline": "Offline", "system_status": "System status", "server_overview": "Server overview", "cpu": "CPU", "memory": "Memory", "disk": "Disque", "players_online": "Online players", "connected_players": "Connected players", "no_players_online": "No players online", "recent_activity": "Recent activity", "usage_graph": "Usage graph", "server_address": "RCON address", "game_port": "Port jeu", "panel_uptime": "Panel uptime", "security": "Sécurité", "quick_commands": "Quick commands", "send_command": "Send command", "rcon_console": "RCON console", "command_placeholder": "Commande RCON...", "players_title": "Players", "global_admin_message": "Global admin message", "send_global": "Send global", "connected": "Connected", "last_refresh": "Last refresh", "connected_players_list": "Connected players", "raw_response": "Raw response", "banned": "Banned", "kick": "Kick", "ban": "Ban", "message": "Message", "configuration_panel": "Panel configuration", "server_folder": "HumanitZ server folder", "steamcmd_folder": "SteamCMD folder", "rcon_ip": "IP RCON", "rcon_port": "Port RCON", "rcon_password": "RCON password", "server_settings": "Server settings", "game_settings": "GameServerSettings.ini", "save_ini": "Save INI", "world_settings": "World settings", "browse_folder": "Parcourir", "file_manager": "File manager", "new_file": "New file", "new_folder": "New folder", "parent_folder": "Parent folder", "explorer": "Explorateur", "no_file_selected": "No file selected", "save_file": "Save file", "file_ready": "File manager ready.", "panel_logs": "Panel logs", "backups": "Backups", "create_backup": "Create backup", "list_backups": "List backups", "chat_logs_live": "Live Chat Logs", "load_latest_log": "Load latest log", "live_toggle": "Live ON/OFF", "auto_restart_title": "Auto Restart", "auto_restart_desc": "Dedicated section for automatic HumanitZ server restarts.", "enable_auto_restart": "Enable auto restart", "time_1": "Heure 1", "time_2": "Heure 2", "time_3": "Heure 3", "time_4": "Heure 4", "warning_minutes": "Warning minutes before restart", "reset_spawners": "Reset spawners before save", "test_1_min": "Test 1 minute", "scheduler_waiting": "Scheduler waiting...", "watchdog_title": "Watchdog", "watchdog_desc": "Automatically restarts HumanitZ if the process crashes or closes unexpectedly.", "enable_watchdog": "Enable Watchdog", "check_interval": "Check every X seconds", "relaunch_delay": "Delay before relaunch after crash", "status": "Status", "restart_count": "Restarts", "last_check": "Last check", "test_config": "Test configuration", "auto_messages_title": "Auto Messages", "auto_messages_desc": "Automatically sends global in-game messages via RCON with admin <message>.", "enable_auto_messages": "Enable Auto Messages", "message_interval": "Send interval in minutes", "send_mode": "Send mode", "rotation": "Automatic rotation", "random": "Random", "fixed": "Always first message", "messages_one_line": "Messages, one per line", "send_test_now": "Send test now", "last_message": "Last message", "next_send": "Next send", "total_sent": "Total sent", "chat_moderation_title": "Modération Chat", "chat_moderation_desc": "Watches HumanitZ chat logs, detects forbidden words, warns then kicks via RCON.", "enable_chat_moderation": "Enable chat moderation", "send_warning": "Send warning", "auto_kick": "Automatic kick", "warnings_before_kick": "Warnings before kick", "reset_infractions": "Reset infractions after X minutes", "banned_words": "Forbidden words, one per line", "test_punishment": "Test punishment", "watched_words": "Watched words", "warnings": "Warnings", "kicks": "Kicks", "detections": "Detections", "install_title": "Install / Update HumanitZ", "install_desc": "The server must be stopped before installing or updating.", "install_server_folder": "HumanitZ server install folder", "app_id": "AppID HumanitZ", "validate_files": "Validate SteamCMD files", "launch_install_update": "Start install / update", "login_title": "Panel login", "login_subtitle": "Temporary username: admin · temporary password: 0000", "username": "Gebruiker", "password": "Wachtwoord", "login_btn": "Inloggen", "change_password": "Change temporary password", "change_password_warning": "The temporary password 0000 must be replaced before using the panel.", "current_password": "Current password", "new_password": "New password", "confirm_password": "Confirm new password", "save_new_password": "Save new password", "active_server": "Active server", "server_name": "Server name", "add_edit_server": "Add / edit server", "query_port": "Query port", "save_server": "Save server", "not_configured": "not configured"}, "pl": {"dashboard": "Panel", "console": "Console & RCON", "players": "Gracze", "config": "Konfiguracja", "files": "Pliki", "logs": "Logs & backups", "autorestart": "Auto Restart", "watchdog": "Watchdog", "automessages": "Auto Messages", "moderation": "Chat Moderation", "logout": "Wyloguj", "back_to_panel": "Wróć do panelu", "change_server": "Zmień serwer", "server_choice_tag": "Server selection", "choose_server": "Wybierz serwer", "choose_server_desc": "Select the server to manage or add a new server.", "add": "Add", "open": "Otwórz", "edit": "Edytuj", "delete": "Usuń", "cancel": "Anuluj", "save": "Zapisz", "reload": "Przeładuj", "refresh": "Odśwież", "clear": "Clear", "close": "Close", "browse": "Przeglądaj", "upload": "Upload", "download": "Download", "rename": "Rename", "start": "▶ Start", "stop": "■ Stop", "restart": "↻ Restart", "install_update": "⬇ Instaluj / Aktualizuj", "online": "Online", "offline": "Offline", "system_status": "System status", "server_overview": "Server overview", "cpu": "CPU", "memory": "Memory", "disk": "Disque", "players_online": "Online players", "connected_players": "Connected players", "no_players_online": "No players online", "recent_activity": "Recent activity", "usage_graph": "Usage graph", "server_address": "RCON address", "game_port": "Port jeu", "panel_uptime": "Panel uptime", "security": "Sécurité", "quick_commands": "Quick commands", "send_command": "Send command", "rcon_console": "RCON console", "command_placeholder": "Commande RCON...", "players_title": "Players", "global_admin_message": "Global admin message", "send_global": "Send global", "connected": "Connected", "last_refresh": "Last refresh", "connected_players_list": "Connected players", "raw_response": "Raw response", "banned": "Banned", "kick": "Kick", "ban": "Ban", "message": "Message", "configuration_panel": "Panel configuration", "server_folder": "HumanitZ server folder", "steamcmd_folder": "SteamCMD folder", "rcon_ip": "IP RCON", "rcon_port": "Port RCON", "rcon_password": "RCON password", "server_settings": "Server settings", "game_settings": "GameServerSettings.ini", "save_ini": "Save INI", "world_settings": "World settings", "browse_folder": "Parcourir", "file_manager": "File manager", "new_file": "New file", "new_folder": "New folder", "parent_folder": "Parent folder", "explorer": "Explorateur", "no_file_selected": "No file selected", "save_file": "Save file", "file_ready": "File manager ready.", "panel_logs": "Panel logs", "backups": "Backups", "create_backup": "Create backup", "list_backups": "List backups", "chat_logs_live": "Live Chat Logs", "load_latest_log": "Load latest log", "live_toggle": "Live ON/OFF", "auto_restart_title": "Auto Restart", "auto_restart_desc": "Dedicated section for automatic HumanitZ server restarts.", "enable_auto_restart": "Enable auto restart", "time_1": "Heure 1", "time_2": "Heure 2", "time_3": "Heure 3", "time_4": "Heure 4", "warning_minutes": "Warning minutes before restart", "reset_spawners": "Reset spawners before save", "test_1_min": "Test 1 minute", "scheduler_waiting": "Scheduler waiting...", "watchdog_title": "Watchdog", "watchdog_desc": "Automatically restarts HumanitZ if the process crashes or closes unexpectedly.", "enable_watchdog": "Enable Watchdog", "check_interval": "Check every X seconds", "relaunch_delay": "Delay before relaunch after crash", "status": "Status", "restart_count": "Restarts", "last_check": "Last check", "test_config": "Test configuration", "auto_messages_title": "Auto Messages", "auto_messages_desc": "Automatically sends global in-game messages via RCON with admin <message>.", "enable_auto_messages": "Enable Auto Messages", "message_interval": "Send interval in minutes", "send_mode": "Send mode", "rotation": "Automatic rotation", "random": "Random", "fixed": "Always first message", "messages_one_line": "Messages, one per line", "send_test_now": "Send test now", "last_message": "Last message", "next_send": "Next send", "total_sent": "Total sent", "chat_moderation_title": "Modération Chat", "chat_moderation_desc": "Watches HumanitZ chat logs, detects forbidden words, warns then kicks via RCON.", "enable_chat_moderation": "Enable chat moderation", "send_warning": "Send warning", "auto_kick": "Automatic kick", "warnings_before_kick": "Warnings before kick", "reset_infractions": "Reset infractions after X minutes", "banned_words": "Forbidden words, one per line", "test_punishment": "Test punishment", "watched_words": "Watched words", "warnings": "Warnings", "kicks": "Kicks", "detections": "Detections", "install_title": "Install / Update HumanitZ", "install_desc": "The server must be stopped before installing or updating.", "install_server_folder": "HumanitZ server install folder", "app_id": "AppID HumanitZ", "validate_files": "Validate SteamCMD files", "launch_install_update": "Start install / update", "login_title": "Logowanie panelu", "login_subtitle": "Temporary username: admin · temporary password: 0000", "username": "Użytkownik", "password": "Hasło", "login_btn": "Zaloguj", "change_password": "Change temporary password", "change_password_warning": "The temporary password 0000 must be replaced before using the panel.", "current_password": "Current password", "new_password": "New password", "confirm_password": "Confirm new password", "save_new_password": "Save new password", "active_server": "Active server", "server_name": "Server name", "add_edit_server": "Add / edit server", "query_port": "Query port", "save_server": "Save server", "not_configured": "not configured"}};
+const I18N_COMPLETION_PATCH={
+fr:{players:'Joueurs',logs:'Journaux & sauvegardes',autorestart:'Redémarrage auto',automessages:'Messages auto',add:'Ajouter',upload:'Importer',online:'En ligne',offline:'Hors ligne',players_title:'Joueurs',query_port:'Port Query',validate_files:'Valider les fichiers SteamCMD',auto_messages_eyebrow:'📢 Messages serveur',message_sent:'Message envoyé',forecast:'Prévision',since_panel_start:'Depuis le lancement du panel',auto_messages_placeholder:'Bienvenue sur HumanitZ !\\nDiscord : discord.gg/xxxxx\\nRespectez les règles du serveur.',auto_messages_saved:'Auto Messages sauvegardé',auto_messages_test_prompt:'Message de test à envoyer via admin <message> :',auto_messages_test_default:'Bienvenue sur HumanitZ !',auto_messages_test_sent:'Message de test envoyé',tip_title:'Astuce',tip_press:'Appuie sur',tip_palette:'pour ouvrir la palette d’actions rapide.',action_palette:'Palette d’actions',action_search_placeholder:'Rechercher une action...',action_start_server:'Démarrer serveur',action_stop_server:'Arrêter serveur',action_restart_server:'Redémarrer serveur',action_create_backup:'Créer backup',action_players_command:'Commande Players',action_save_command:'Commande Save'},
+es:{logs:'Registros y copias',autorestart:'Reinicio automático',watchdog:'Vigilancia',automessages:'Mensajes automáticos',moderation:'Moderación de chat',server_choice_tag:'Selección de servidor',add:'Añadir',clear:'Vaciar',close:'Cerrar',upload:'Subir',download:'Descargar',rename:'Renombrar',online:'En línea',offline:'Desconectado',system_status:'Estado del sistema',server_overview:'Vista del servidor',memory:'Memoria',disk:'Disco',players_online:'Jugadores en línea',connected_players:'Jugadores conectados',no_players_online:'No hay jugadores en línea',recent_activity:'Actividad reciente',usage_graph:'Gráfico de uso',server_address:'Dirección RCON',game_port:'Puerto de juego',panel_uptime:'Tiempo activo del panel',security:'Seguridad',quick_commands:'Comandos rápidos',send_command:'Enviar comando',rcon_console:'Consola RCON',command_placeholder:'Comando RCON...',global_admin_message:'Mensaje global de admin',send_global:'Enviar global',connected:'Conectados',last_refresh:'Última actualización',connected_players_list:'Jugadores conectados',raw_response:'Respuesta sin procesar',banned:'Baneados',message:'Mensaje',configuration_panel:'Configuración del panel',server_folder:'Carpeta del servidor HumanitZ',server_settings:'Ajustes del servidor',save_ini:'Guardar INI',world_settings:'Ajustes del mundo',file_manager:'Gestor de archivos',new_file:'Nuevo archivo',new_folder:'Nueva carpeta',parent_folder:'Carpeta superior',no_file_selected:'Ningún archivo seleccionado',save_file:'Guardar archivo',file_ready:'Gestor de archivos listo.',panel_logs:'Registros del panel',backups:'Copias',create_backup:'Crear copia',list_backups:'Listar copias',chat_logs_live:'Registros de chat en vivo',load_latest_log:'Cargar último registro',auto_restart_title:'Reinicio automático',enable_auto_restart:'Activar reinicio automático',warning_minutes:'Minutos de aviso antes del reinicio',reset_spawners:'Reiniciar spawners antes de guardar',scheduler_waiting:'Planificador en espera...',watchdog_title:'Vigilancia',enable_watchdog:'Activar vigilancia',status:'Estado',restart_count:'Reinicios',last_check:'Última comprobación',auto_messages_title:'Mensajes automáticos',enable_auto_messages:'Activar mensajes automáticos',message_interval:'Intervalo de envío en minutos',send_mode:'Modo de envío',rotation:'Rotación automática',fixed:'Siempre el primer mensaje',messages_one_line:'Mensajes, uno por línea',send_test_now:'Enviar prueba ahora',last_message:'Último mensaje',next_send:'Próximo envío',total_sent:'Total enviados',chat_moderation_title:'Moderación de chat',enable_chat_moderation:'Activar moderación de chat',send_warning:'Enviar advertencia',auto_kick:'Expulsión automática',warnings_before_kick:'Advertencias antes de expulsar',banned_words:'Palabras prohibidas, una por línea',test_punishment:'Probar sanción',watched_words:'Palabras vigiladas',warnings:'Advertencias',kicks:'Expulsiones',detections:'Detecciones',install_title:'Instalar / Actualizar HumanitZ',install_desc:'El servidor debe estar detenido antes de instalar o actualizar.',install_server_folder:'Carpeta de instalación del servidor HumanitZ',validate_files:'Validar archivos SteamCMD',launch_install_update:'Iniciar instalación / actualización',login_title:'Acceso al panel',login_subtitle:'Usuario temporal: admin · contraseña temporal: 0000',change_password:'Cambiar contraseña temporal',current_password:'Contraseña actual',new_password:'Nueva contraseña',confirm_password:'Confirmar nueva contraseña',save_new_password:'Guardar nueva contraseña',active_server:'Servidor activo',add_edit_server:'Añadir / editar servidor',query_port:'Puerto Query',save_server:'Guardar servidor',not_configured:'sin configurar'},
+de:{logs:'Logs & Sicherungen',autorestart:'Automatischer Neustart',automessages:'Automatische Nachrichten',moderation:'Chat-Moderation',server_choice_tag:'Serverauswahl',add:'Hinzufügen',clear:'Leeren',close:'Schließen',upload:'Hochladen',download:'Herunterladen',rename:'Umbenennen',system_status:'Systemstatus',server_overview:'Serverübersicht',memory:'Speicher',disk:'Festplatte',players_online:'Spieler online',connected_players:'Verbundene Spieler',no_players_online:'Keine Spieler online',recent_activity:'Letzte Aktivität',usage_graph:'Nutzungsdiagramm',server_address:'RCON-Adresse',game_port:'Spielport',panel_uptime:'Panel-Laufzeit',security:'Sicherheit',quick_commands:'Schnellbefehle',send_command:'Befehl senden',rcon_console:'RCON-Konsole',command_placeholder:'RCON-Befehl...',global_admin_message:'Globale Admin-Nachricht',send_global:'Global senden',connected:'Verbunden',last_refresh:'Letzte Aktualisierung',raw_response:'Rohantwort',banned:'Gesperrt',configuration_panel:'Panel-Konfiguration',server_folder:'HumanitZ-Serverordner',save_ini:'INI speichern',file_manager:'Dateimanager',new_file:'Neue Datei',new_folder:'Neuer Ordner',parent_folder:'Übergeordneter Ordner',no_file_selected:'Keine Datei ausgewählt',save_file:'Datei speichern',panel_logs:'Panel-Logs',backups:'Sicherungen',create_backup:'Sicherung erstellen',list_backups:'Sicherungen auflisten',auto_restart_title:'Automatischer Neustart',enable_auto_restart:'Automatischen Neustart aktivieren',warning_minutes:'Warnminuten vor Neustart',status:'Status',restart_count:'Neustarts',last_check:'Letzte Prüfung',enable_auto_messages:'Automatische Nachrichten aktivieren',message_interval:'Sendeintervall in Minuten',send_mode:'Sendemodus',fixed:'Immer die erste Nachricht',send_test_now:'Test jetzt senden',last_message:'Letzte Nachricht',next_send:'Nächster Versand',total_sent:'Gesamt gesendet',enable_chat_moderation:'Chat-Moderation aktivieren',send_warning:'Warnung senden',auto_kick:'Automatischer Kick',warnings:'Warnungen',detections:'Erkennungen',install_title:'HumanitZ installieren / aktualisieren',validate_files:'SteamCMD-Dateien validieren',login_title:'Panel-Anmeldung',current_password:'Aktuelles Passwort',new_password:'Neues Passwort',confirm_password:'Neues Passwort bestätigen',save_new_password:'Neues Passwort speichern',active_server:'Aktiver Server',add_edit_server:'Server hinzufügen / bearbeiten',save_server:'Server speichern',not_configured:'nicht konfiguriert'},
+it:{logs:'Log e backup',autorestart:'Riavvio automatico',automessages:'Messaggi automatici',moderation:'Moderazione chat',back_to_panel:'Torna al pannello',server_choice_tag:'Selezione server',add:'Aggiungi',clear:'Svuota',close:'Chiudi',upload:'Carica',download:'Scarica',rename:'Rinomina',system_status:'Stato sistema',server_overview:'Panoramica server',memory:'Memoria',disk:'Disco',players_online:'Giocatori online',connected_players:'Giocatori connessi',no_players_online:'Nessun giocatore online',server_address:'Indirizzo RCON',game_port:'Porta di gioco',panel_uptime:'Uptime pannello',security:'Sicurezza',quick_commands:'Comandi rapidi',send_command:'Invia comando',global_admin_message:'Messaggio admin globale',send_global:'Invia globale',connected:'Connessi',last_refresh:'Ultimo aggiornamento',raw_response:'Risposta grezza',banned:'Bannati',configuration_panel:'Configurazione pannello',server_folder:'Cartella server HumanitZ',save_ini:'Salva INI',file_manager:'Gestore file',new_file:'Nuovo file',new_folder:'Nuova cartella',parent_folder:'Cartella superiore',no_file_selected:'Nessun file selezionato',save_file:'Salva file',panel_logs:'Log pannello',create_backup:'Crea backup',list_backups:'Elenca backup',auto_restart_title:'Riavvio automatico',enable_auto_restart:'Attiva riavvio automatico',status:'Stato',restart_count:'Riavvii',last_check:'Ultimo controllo',enable_auto_messages:'Attiva messaggi automatici',message_interval:'Intervallo invio in minuti',send_mode:'Modalità invio',send_test_now:'Invia test ora',last_message:'Ultimo messaggio',next_send:'Prossimo invio',total_sent:'Totale inviati',enable_chat_moderation:'Attiva moderazione chat',send_warning:'Invia avviso',warnings:'Avvisi',detections:'Rilevamenti',install_title:'Installa / Aggiorna HumanitZ',validate_files:'Convalida file SteamCMD',login_title:'Accesso pannello',current_password:'Password attuale',new_password:'Nuova password',confirm_password:'Conferma nuova password',save_new_password:'Salva nuova password',active_server:'Server attivo',add_edit_server:'Aggiungi / modifica server',save_server:'Salva server',not_configured:'non configurato'},
+pt:{files:'Arquivos',logs:'Registos e cópias',autorestart:'Reinício automático',automessages:'Mensagens automáticas',moderation:'Moderação de chat',server_choice_tag:'Seleção de servidor',add:'Adicionar',clear:'Limpar',close:'Fechar',upload:'Enviar',download:'Transferir',rename:'Renomear',system_status:'Estado do sistema',server_overview:'Visão geral do servidor',memory:'Memória',disk:'Disco',players_online:'Jogadores online',connected_players:'Jogadores ligados',no_players_online:'Nenhum jogador online',server_address:'Endereço RCON',game_port:'Porta do jogo',panel_uptime:'Tempo ativo do painel',security:'Segurança',quick_commands:'Comandos rápidos',send_command:'Enviar comando',global_admin_message:'Mensagem global de admin',send_global:'Enviar global',connected:'Ligados',last_refresh:'Última atualização',raw_response:'Resposta bruta',banned:'Banidos',configuration_panel:'Configuração do painel',server_folder:'Pasta do servidor HumanitZ',save_ini:'Guardar INI',file_manager:'Gestor de ficheiros',new_file:'Novo ficheiro',new_folder:'Nova pasta',parent_folder:'Pasta superior',no_file_selected:'Nenhum ficheiro selecionado',save_file:'Guardar ficheiro',panel_logs:'Registos do painel',create_backup:'Criar cópia',list_backups:'Listar cópias',auto_restart_title:'Reinício automático',enable_auto_restart:'Ativar reinício automático',status:'Estado',restart_count:'Reinícios',last_check:'Última verificação',enable_auto_messages:'Ativar mensagens automáticas',message_interval:'Intervalo de envio em minutos',send_mode:'Modo de envio',send_test_now:'Enviar teste agora',last_message:'Última mensagem',next_send:'Próximo envio',total_sent:'Total enviado',enable_chat_moderation:'Ativar moderação de chat',send_warning:'Enviar aviso',warnings:'Avisos',detections:'Deteções',install_title:'Instalar / Atualizar HumanitZ',validate_files:'Validar ficheiros SteamCMD',login_title:'Início de sessão do painel',current_password:'Palavra-passe atual',new_password:'Nova palavra-passe',confirm_password:'Confirmar nova palavra-passe',save_new_password:'Guardar nova palavra-passe',active_server:'Servidor ativo',add_edit_server:'Adicionar / editar servidor',save_server:'Guardar servidor',not_configured:'não configurado'},
+nl:{logs:'Logs & back-ups',autorestart:'Automatisch herstarten',automessages:'Automatische berichten',moderation:'Chatmoderatie',back_to_panel:'Terug naar paneel',server_choice_tag:'Serverselectie',add:'Toevoegen',clear:'Leegmaken',close:'Sluiten',upload:'Uploaden',download:'Downloaden',rename:'Hernoemen',system_status:'Systeemstatus',server_overview:'Serveroverzicht',memory:'Geheugen',disk:'Schijf',players_online:'Spelers online',connected_players:'Verbonden spelers',no_players_online:'Geen spelers online',server_address:'RCON-adres',game_port:'Gamepoort',panel_uptime:'Paneel-uptime',security:'Beveiliging',quick_commands:'Snelle opdrachten',send_command:'Opdracht verzenden',global_admin_message:'Globaal adminbericht',send_global:'Globaal verzenden',connected:'Verbonden',last_refresh:'Laatste vernieuwing',raw_response:'Ruwe respons',banned:'Verbannen',configuration_panel:'Paneelconfiguratie',server_folder:'HumanitZ-servermap',save_ini:'INI opslaan',file_manager:'Bestandsbeheer',new_file:'Nieuw bestand',new_folder:'Nieuwe map',parent_folder:'Bovenliggende map',no_file_selected:'Geen bestand geselecteerd',save_file:'Bestand opslaan',panel_logs:'Paneellogs',backups:'Back-ups',create_backup:'Back-up maken',list_backups:'Back-ups weergeven',auto_restart_title:'Automatisch herstarten',enable_auto_restart:'Automatisch herstarten inschakelen',status:'Status',restart_count:'Herstarts',last_check:'Laatste controle',enable_auto_messages:'Automatische berichten inschakelen',message_interval:'Verzendinterval in minuten',send_mode:'Verzendmodus',send_test_now:'Test nu verzenden',last_message:'Laatste bericht',next_send:'Volgende verzending',total_sent:'Totaal verzonden',enable_chat_moderation:'Chatmoderatie inschakelen',send_warning:'Waarschuwing verzenden',warnings:'Waarschuwingen',detections:'Detecties',install_title:'HumanitZ installeren / bijwerken',validate_files:'SteamCMD-bestanden valideren',login_title:'Paneelaanmelding',current_password:'Huidig wachtwoord',new_password:'Nieuw wachtwoord',confirm_password:'Nieuw wachtwoord bevestigen',save_new_password:'Nieuw wachtwoord opslaan',active_server:'Actieve server',add_edit_server:'Server toevoegen / bewerken',save_server:'Server opslaan',not_configured:'niet geconfigureerd'},
+pl:{logs:'Logi i kopie',autorestart:'Automatyczny restart',automessages:'Automatyczne wiadomości',moderation:'Moderacja czatu',server_choice_tag:'Wybór serwera',add:'Dodaj',clear:'Wyczyść',close:'Zamknij',upload:'Prześlij',download:'Pobierz',rename:'Zmień nazwę',system_status:'Stan systemu',server_overview:'Przegląd serwera',memory:'Pamięć',disk:'Dysk',players_online:'Gracze online',connected_players:'Połączeni gracze',no_players_online:'Brak graczy online',server_address:'Adres RCON',game_port:'Port gry',panel_uptime:'Czas działania panelu',security:'Bezpieczeństwo',quick_commands:'Szybkie komendy',send_command:'Wyślij komendę',global_admin_message:'Globalna wiadomość admina',send_global:'Wyślij globalnie',connected:'Połączeni',last_refresh:'Ostatnie odświeżenie',raw_response:'Surowa odpowiedź',banned:'Zbanowani',configuration_panel:'Konfiguracja panelu',server_folder:'Folder serwera HumanitZ',save_ini:'Zapisz INI',file_manager:'Menedżer plików',new_file:'Nowy plik',new_folder:'Nowy folder',parent_folder:'Folder nadrzędny',no_file_selected:'Nie wybrano pliku',save_file:'Zapisz plik',panel_logs:'Logi panelu',backups:'Kopie',create_backup:'Utwórz kopię',list_backups:'Pokaż kopie',auto_restart_title:'Automatyczny restart',enable_auto_restart:'Włącz automatyczny restart',status:'Stan',restart_count:'Restarty',last_check:'Ostatnia kontrola',enable_auto_messages:'Włącz automatyczne wiadomości',message_interval:'Interwał wysyłania w minutach',send_mode:'Tryb wysyłania',send_test_now:'Wyślij test teraz',last_message:'Ostatnia wiadomość',next_send:'Następna wysyłka',total_sent:'Łącznie wysłano',chat_moderation_title:'Moderacja czatu',enable_chat_moderation:'Włącz moderację czatu',send_warning:'Wyślij ostrzeżenie',warnings:'Ostrzeżenia',detections:'Wykrycia',install_title:'Zainstaluj / zaktualizuj HumanitZ',validate_files:'Sprawdź pliki SteamCMD',login_title:'Logowanie do panelu',current_password:'Aktualne hasło',new_password:'Nowe hasło',confirm_password:'Potwierdź nowe hasło',save_new_password:'Zapisz nowe hasło',active_server:'Aktywny serwer',server_name:'Nazwa serwera',add_edit_server:'Dodaj / edytuj serwer',save_server:'Zapisz serwer',not_configured:'nie skonfigurowano'}
+};
+for(const [lang,patch] of Object.entries(I18N_COMPLETION_PATCH)){I18N[lang]=Object.assign(I18N[lang]||{},patch);}
+const TEXT_I18N_MAP={"Tableau de bord": "dashboard", "Console & RCON": "console", "Players": "players_title", "Configuration": "config", "Fichiers": "files", "Logs & backups": "logs", "Auto Restart": "auto_restart_title", "Watchdog": "watchdog_title", "Auto Messages": "auto_messages_title", "Modération Chat": "chat_moderation_title", "Déconnexion": "logout", "Retour au panel": "back_to_panel", "Changer serveur": "change_server", "Choix du serveur": "server_choice_tag", "Choisir un serveur": "choose_server", "Sélectionne le serveur à gérer ou ajoute un nouveau serveur.": "choose_server_desc", "Add": "add", "Ouvrir": "open", "Modifier": "edit", "Supprimer": "delete", "Annuler": "cancel", "Sauvegarder": "save", "Recharger": "reload", "Rafraîchir": "refresh", "Vider": "clear", "Fermer": "close", "Parcourir": "browse_folder", "Upload": "upload", "Télécharger": "download", "Renommer": "rename", "▶ Démarrer": "start", "■ Arrêter": "stop", "↻ Redémarrer": "restart", "⬇ Installer / Mise à jour": "install_update", "Online": "online", "Offline": "offline", "État système": "system_status", "Aperçu du serveur": "server_overview", "CPU": "cpu", "Mémoire": "memory", "Disque": "disk", "Joueurs en ligne": "players_online", "Joueurs connectés": "connected_players_list", "Aucun joueur en ligne": "no_players_online", "Activité récente": "recent_activity", "Graphique d'utilisation": "usage_graph", "Adresse RCON": "server_address", "Port jeu": "game_port", "Uptime panel": "panel_uptime", "Sécurité": "security", "Commandes rapides": "quick_commands", "Envoyer commande": "send_command", "Console RCON": "rcon_console", "Commande RCON...": "command_placeholder", "Message global admin": "global_admin_message", "Envoyer global": "send_global", "Connectés": "connected", "Dernier refresh": "last_refresh", "Réponse brute": "raw_response", "Bannis": "banned", "Kick": "kick", "Ban": "ban", "Message": "message", "Configuration panel": "configuration_panel", "Dossier serveur HumanitZ": "server_folder", "Dossier SteamCMD": "steamcmd_folder", "IP RCON": "rcon_ip", "Port RCON": "rcon_port", "Mot de passe RCON": "rcon_password", "Paramètres serveur": "server_settings", "GameServerSettings.ini": "game_settings", "Sauvegarder INI": "save_ini", "World settings": "world_settings", "Gestionnaire de fichiers": "file_manager", "Nouveau fichier": "new_file", "Nouveau dossier": "new_folder", "Dossier parent": "parent_folder", "Explorateur": "explorer", "Aucun fichier sélectionné": "no_file_selected", "Sauvegarder fichier": "save_file", "Gestionnaire prêt.": "file_ready", "Logs panel": "panel_logs", "Backups": "backups", "Créer un backup": "create_backup", "Lister les backups": "list_backups", "Logs Chat Live": "chat_logs_live", "Charger dernier log": "load_latest_log", "Live ON/OFF": "live_toggle", "Section dédiée au redémarrage automatique du serveur HumanitZ.": "auto_restart_desc", "Activer le redémarrage auto": "enable_auto_restart", "Heure 1": "time_1", "Heure 2": "time_2", "Heure 3": "time_3", "Heure 4": "time_4", "Prévenir combien de minutes avant": "warning_minutes", "Reset spawners avant sauvegarde": "reset_spawners", "Test 1 minute": "test_1_min", "Scheduler en attente...": "scheduler_waiting", "Relance automatiquement HumanitZ si le processus crash ou se ferme sans action volontaire.": "watchdog_desc", "Activer le Watchdog": "enable_watchdog", "Vérification toutes les X secondes": "check_interval", "Délai avant relance après crash": "relaunch_delay", "Statut": "status", "Relances": "restart_count", "Dernier contrôle": "last_check", "Tester la configuration": "test_config", "Envoie automatiquement des messages globaux en jeu via RCON avec la commande admin <message>.": "auto_messages_desc", "Activer Auto Messages": "enable_auto_messages", "Intervalle d'envoi en minutes": "message_interval", "Mode d'envoi": "send_mode", "Rotation automatique": "rotation", "Aléatoire": "random", "Toujours le premier message": "fixed", "Messages, un par ligne": "messages_one_line", "Envoyer un test maintenant": "send_test_now", "Dernier message": "last_message", "Prochain envoi": "next_send", "Total envoyés": "total_sent", "Surveille les logs de chat HumanitZ, détecte les mots interdits, avertit puis kick via RCON.": "chat_moderation_desc", "Activer la modération chat": "enable_chat_moderation", "Envoyer un avertissement": "send_warning", "Kick automatique": "auto_kick", "Avertissements avant kick": "warnings_before_kick", "Reset infractions après X minutes": "reset_infractions", "Mots interdits, un par ligne": "banned_words", "Tester une sanction": "test_punishment", "Mots surveillés": "watched_words", "Avertissements": "warnings", "Kicks": "kicks", "Détections": "detections", "Installer / Mise à jour HumanitZ": "install_title", "Le serveur doit être arrêté avant une installation ou une mise à jour.": "install_desc", "Dossier d'installation serveur HumanitZ": "install_server_folder", "AppID HumanitZ": "app_id", "Validate fichiers SteamCMD": "validate_files", "Lancer installation / mise à jour": "launch_install_update", "Connexion au panel": "login_title", "Identifiant provisoire : admin · mot de passe provisoire : 0000": "login_subtitle", "Identifiant": "username", "Mot de passe": "password", "Se connecter": "login_btn", "Changer le mot de passe provisoire": "change_password", "Le mot de passe provisoire 0000 doit être remplacé avant d’utiliser le panel.": "change_password_warning", "Mot de passe actuel": "current_password", "Nouveau mot de passe": "new_password", "Confirmer le nouveau mot de passe": "confirm_password", "Enregistrer le nouveau mot de passe": "save_new_password", "Serveur actif": "active_server", "Nom du serveur": "server_name", "Ajouter / modifier un serveur": "add_edit_server", "Query port": "query_port", "Sauvegarder serveur": "save_server", "non configuré": "not_configured", "Dashboard": "dashboard", "Files": "files", "Chat Moderation": "moderation", "Logout": "logout", "Back to panel": "back_to_panel", "Change server": "change_server", "Server selection": "server_choice_tag", "Choose a server": "choose_server", "Select the server to manage or add a new server.": "choose_server_desc", "Open": "open", "Edit": "edit", "Delete": "delete", "Cancel": "cancel", "Save": "save", "Reload": "reload", "Refresh": "refresh", "Clear": "clear", "Close": "close", "Browse": "browse", "Download": "download", "Rename": "rename", "▶ Start": "start", "■ Stop": "stop", "↻ Restart": "restart", "⬇ Install / Update": "install_update", "System status": "system_status", "Server overview": "server_overview", "Memory": "memory", "Online players": "players_online", "Connected players": "connected_players_list", "No players online": "no_players_online", "Recent activity": "recent_activity", "Usage graph": "usage_graph", "RCON address": "server_address", "Panel uptime": "panel_uptime", "Quick commands": "quick_commands", "Send command": "send_command", "RCON console": "rcon_console", "Global admin message": "global_admin_message", "Send global": "send_global", "Connected": "connected", "Last refresh": "last_refresh", "Raw response": "raw_response", "Banned": "banned", "Panel configuration": "configuration_panel", "HumanitZ server folder": "server_folder", "SteamCMD folder": "steamcmd_folder", "RCON password": "rcon_password", "Server settings": "server_settings", "Save INI": "save_ini", "File manager": "file_manager", "New file": "new_file", "New folder": "new_folder", "Parent folder": "parent_folder", "No file selected": "no_file_selected", "Save file": "save_file", "File manager ready.": "file_ready", "Panel logs": "panel_logs", "Create backup": "create_backup", "List backups": "list_backups", "Live Chat Logs": "chat_logs_live", "Load latest log": "load_latest_log", "Dedicated section for automatic HumanitZ server restarts.": "auto_restart_desc", "Enable auto restart": "enable_auto_restart", "Warning minutes before restart": "warning_minutes", "Reset spawners before save": "reset_spawners", "Scheduler waiting...": "scheduler_waiting", "Automatically restarts HumanitZ if the process crashes or closes unexpectedly.": "watchdog_desc", "Enable Watchdog": "enable_watchdog", "Check every X seconds": "check_interval", "Delay before relaunch after crash": "relaunch_delay", "Status": "status", "Restarts": "restart_count", "Last check": "last_check", "Test configuration": "test_config", "Automatically sends global in-game messages via RCON with admin <message>.": "auto_messages_desc", "Enable Auto Messages": "enable_auto_messages", "Send interval in minutes": "message_interval", "Send mode": "send_mode", "Automatic rotation": "rotation", "Random": "random", "Always first message": "fixed", "Messages, one per line": "messages_one_line", "Send test now": "send_test_now", "Last message": "last_message", "Next send": "next_send", "Total sent": "total_sent", "Watches HumanitZ chat logs, detects forbidden words, warns then kicks via RCON.": "chat_moderation_desc", "Enable chat moderation": "enable_chat_moderation", "Send warning": "send_warning", "Automatic kick": "auto_kick", "Warnings before kick": "warnings_before_kick", "Reset infractions after X minutes": "reset_infractions", "Forbidden words, one per line": "banned_words", "Test punishment": "test_punishment", "Watched words": "watched_words", "Warnings": "warnings", "Detections": "detections", "Install / Update HumanitZ": "install_title", "The server must be stopped before installing or updating.": "install_desc", "HumanitZ server install folder": "install_server_folder", "Validate SteamCMD files": "validate_files", "Start install / update": "launch_install_update", "Panel login": "login_title", "Temporary username: admin · temporary password: 0000": "login_subtitle", "Username": "username", "Password": "password", "Log in": "login_btn", "Change temporary password": "change_password", "The temporary password 0000 must be replaced before using the panel.": "change_password_warning", "Current password": "current_password", "New password": "new_password", "Confirm new password": "confirm_password", "Save new password": "save_new_password", "Active server": "active_server", "Server name": "server_name", "Add / edit server": "add_edit_server", "Save server": "save_server", "not configured": "not_configured", "Server Manager sécurisé": "security", "Aucun serveur sélectionné": "active_server", "Chargement...": "refresh", "Aucune donnée joueur.": "raw_response", "Aucun backup chargé.": "backups", "Clique sur Charger dernier log.": "chat_logs_live", "Prêt.": "status"};
+for(const langPack of Object.values(I18N)){
+  for(const [key,value] of Object.entries(langPack)){
+    if(typeof value==='string' && value && !TEXT_I18N_MAP[value]) TEXT_I18N_MAP[value]=key;
+  }
+}
+let currentLang=localStorage.getItem('hz_lang')||'fr';
+function t(k){return (I18N[currentLang]&&I18N[currentLang][k])||I18N.fr[k]||k}
+function tf(k,vars={}){return t(k).replace(/\{(\w+)\}/g,(_,name)=>vars[name]??'')}
+function translateStatusValue(value){
+  const key=TEXT_I18N_MAP[String(value||'').trim()];
+  return key?t(key):value;
+}
+async function loadLanguageFiles(){
+  try{
+    const packs=await fetch('/api/translations').then(r=>r.ok?r.json():{});
+    for(const [lang,values] of Object.entries(packs||{})){
+      I18N[lang]=Object.assign(I18N[lang]||{},values||{});
+    }
+    for(const langPack of Object.values(I18N)){
+      for(const [key,value] of Object.entries(langPack)){
+        if(typeof value==='string' && value && !TEXT_I18N_MAP[value]) TEXT_I18N_MAP[value]=key;
+      }
+    }
+    applyLang();
+  }catch(e){}
+}
+function setLang(lang){currentLang=lang||'fr';localStorage.setItem('hz_lang',currentLang);applyLang();}
+function syncLangSelectors(){['langSelect','langSelectLogin'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=currentLang;});}
+function translateTextNodes(root=document.body){
+  const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode(node){
+    if(!node.nodeValue.trim())return NodeFilter.FILTER_REJECT;
+    const p=node.parentElement;
+    if(!p||['SCRIPT','STYLE','TEXTAREA','OPTION'].includes(p.tagName))return NodeFilter.FILTER_REJECT;
+    return NodeFilter.FILTER_ACCEPT;
+  }});
+  let n; while(n=walker.nextNode()){
+    const raw=n.nodeValue.trim();
+    const key=TEXT_I18N_MAP[raw];
+    if(key)n.nodeValue=n.nodeValue.replace(raw,t(key));
+  }
+}
+function applyLang(){
+  syncLangSelectors();
+  document.querySelectorAll('[data-i18n]').forEach(el=>{const key=el.getAttribute('data-i18n');if(key)el.textContent=t(key);});
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{const key=el.getAttribute('data-i18n-placeholder');if(key)el.setAttribute('placeholder',t(key).replace(/\\n/g,'\n'));});
+  translateTextNodes();
+  if(typeof tabs!=='undefined'){
+    const map={overview:'dashboard',console:'console',players:'players',config:'config',files:'files',logs:'logs',autorestart:'autorestart',watchdog:'watchdog',automessages:'automessages',chatmoderation:'moderation'};
+    document.querySelectorAll('.nav button').forEach(btn=>{const id=(btn.id||'').replace('nav-','');const key=map[id];if(key){const icon=btn.querySelector('i')?.outerHTML||'';btn.innerHTML=icon+t(key);}});
+    const active=document.querySelector('.tab.active'); if(active&&document.getElementById('pageTitle')){const key=map[active.id];if(key)pageTitle.textContent=t(key);}
+  }
+  const installBtn=document.getElementById('installUpdateBtn'); if(installBtn) installBtn.textContent=t('install_update');
+  const activeName=document.getElementById('activeServerName'); if(activeName&&activeName.dataset.serverName)activeName.textContent=t('active_server')+' : '+activeName.dataset.serverName;
+}
+setTimeout(applyLang,250);
+loadLanguageFiles();
+
+const tabs=[['overview','⌂',t('dashboard')],['console','›',t('console')],['players','👥',t('players')],['config','⚙',t('config')],['files','📁',t('files')],['logs','◷',t('logs')],['autorestart','⏱',t('autorestart')],['watchdog','🛡',t('watchdog')],['automessages','📢',t('automessages')],['chatmoderation','🛡',t('moderation')]];const nav=document.getElementById('nav');tabs.forEach(t=>{let b=document.createElement('button');b.innerHTML=`<i>${t[1]}</i>${t[2]}`;b.onclick=()=>showTab(t[0]);b.id='nav-'+t[0];nav.appendChild(b)});function showTab(id){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.id===id));document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));document.getElementById('nav-'+id).classList.add('active');pageTitle.textContent=tabs.find(x=>x[0]===id)?.[2]||'Panel';setTimeout(applyLang,0);if(id==='logs'&&typeof loadChatLogsLatest==='function')loadChatLogsLatest();if(id==='files'&&typeof loadFiles==='function')loadFiles(fileCurrent||'');if(id==='players'&&typeof loadPlayers==='function')loadPlayers();if(id==='autorestart'&&typeof loadAutoRestart==='function')loadAutoRestart();if(id==='watchdog'&&typeof loadWatchdog==='function')loadWatchdog();if(id==='automessages'&&typeof loadAutoMessages==='function')loadAutoMessages();if(id==='chatmoderation'&&typeof loadChatModeration==='function')loadChatModeration()}showTab('overview');
+const started=Date.now(),hist=[];const commands=['info','Players','save','admin','RestartNow','CancelRestart','QuickRestart','shutdown','kick <SteamID>'];quickCmds.innerHTML=commands.map(c=>`<button class="btn dark" onclick="quick('${c.replaceAll("'","\\'")}')">${c}</button>`).join('');function note(t){toast.textContent=t;toast.style.display='block';setTimeout(()=>toast.style.display='none',2800)}async function api(url,opt={}){const r=await fetch(url,{headers:{'Content-Type':'application/json'},...opt});if(!r.ok){let tx=await r.text();note('Erreur: '+tx.slice(0,120));throw new Error(tx)}return r.json()}function fmtBytes(n){if(!n)return'--';let u=['B','KB','MB','GB','TB'],i=0;while(n>1024&&i<u.length-1){n/=1024;i++}return n.toFixed(i?1:0)+' '+u[i]}function setRing(el,p){p=Math.max(0,Math.min(100,Number(p)||0));el.textContent=Math.round(p)+'%';el.style.background=`conic-gradient(var(--red) ${p*3.6}deg,rgba(255,255,255,.09) 0deg)`}function drawSpark(){let c=spark,ctx=c.getContext('2d'),w=c.width=c.offsetWidth*devicePixelRatio,h=c.height=c.offsetHeight*devicePixelRatio;ctx.clearRect(0,0,w,h);ctx.strokeStyle='rgba(211,52,52,.85)';ctx.lineWidth=2*devicePixelRatio;ctx.beginPath();hist.forEach((v,i)=>{let x=i/(Math.max(hist.length-1,1))*w,y=h-(v/100*h*.82)-h*.09;i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke();ctx.strokeStyle='rgba(255,255,255,.12)';ctx.lineWidth=1;for(let i=1;i<4;i++){ctx.beginPath();ctx.moveTo(0,h*i/4);ctx.lineTo(w,h*i/4);ctx.stroke()}}async function refresh(){try{const j=await api('/api/status');const cfg=j.config||{};status.textContent=j.running?'Online':'Offline';status.className='status '+(j.running?'online':'offline');serverName.textContent=(iniCache?.values?.['Host Settings']?.ServerName)||'HumanitZ Dedicated Server';exePath.textContent=j.exe||'Executable non détecté';serverDirChip.textContent=cfg.server_dir||'Aucun dossier serveur';rconAddr.textContent=(cfg.rcon_ip||'127.0.0.1')+':'+(cfg.rcon_port||'8888');portInfo.textContent=(cfg.port||'7777')+' / '+(cfg.query_port||'27015');diskInfo.textContent=j.disk?.percent!=null?`${j.disk.percent}% utilisé (${fmtBytes(j.disk.free)} libres)`:'--';setRing(cpuRing,j.cpu||0);cpuLabel.textContent='Charge actuelle '+Math.round(j.cpu||0)+'%';let rp=j.ram?.percent||0;setRing(ramRing,rp);ramLabel.textContent=fmtBytes(j.ram?.used)+' / '+fmtBytes(j.ram?.total);hist.push(j.cpu||0);while(hist.length>40)hist.shift();drawSpark();['server_dir','steamcmd_dir','port','query_port','rcon_ip','rcon_port','rcon_password'].forEach(k=>{let el=document.getElementById(k);if(el&&!el.matches(':focus'))el.value=cfg[k]||''});}catch(e){}}function tick(){clock.textContent=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});let s=Math.floor((Date.now()-started)/1000),h=String(Math.floor(s/3600)).padStart(2,'0'),m=String(Math.floor(s%3600/60)).padStart(2,'0'),sec=String(s%60).padStart(2,'0');uptime.textContent=`${h}:${m}:${sec}`}setInterval(tick,1000);tick();async function browseFolder(target){try{note('Ouverture du navigateur de dossiers Windows...');let j=await api('/api/browse-folder',{method:'POST',body:JSON.stringify({target})});if(j.cancelled){note('Sélection annulée');return;}document.getElementById(target).value=j.path||'';note('Dossier sélectionné');refresh();loadIni();}catch(e){note('Erreur navigateur de dossiers');}}async function saveConfig(){let body={};['server_dir','steamcmd_dir','port','query_port','rcon_ip','rcon_port','rcon_password'].forEach(k=>body[k]=document.getElementById(k).value);await api('/api/config',{method:'POST',body:JSON.stringify(body)});note('Configuration sauvegardée');refresh();loadIni()}async function power(a){await api('/api/power/'+a,{method:'POST'});note('Action envoyée : '+a);setTimeout(refresh,1300)}async function sendRcon(){let c=cmd.value.trim();if(!c)return;let j=await api('/api/rcon',{method:'POST',body:JSON.stringify({command:c})});rconOut.textContent=`> ${c}\n${j.response||'(réponse vide)'}\n\n`+rconOut.textContent;cmd.value=''}function quick(c){cmd.value=c;sendRcon()}async function players(){let j=await api('/api/players');playersOut.textContent=j.raw||'(aucun retour)';let count=(j.raw||'').split('\n').filter(x=>x.trim()).length;/* playerCount handled by refreshDashboardPlayers */playersBar.style.width=Math.min(100,count*8)+'%'}async function backup(){let j=await api('/api/backup',{method:'POST'});note('Backup créé');listBackups()}async function listBackups(){let j=await api('/api/backups');backupCount.textContent=(j.backups||[]).length;backupsOut.textContent=JSON.stringify(j.backups,null,2)}async function loadLogs(){let j=await api('/api/logs');logsOut.textContent=j.panel||'';logLines.textContent=(j.panel||'').split('\n').filter(Boolean).length}let iniCache=null;function esc(v){return String(v??'').replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;')}function isSecretKey(k){return ['Password','AdminPass','RCONPass'].includes(k)}function isBooleanValue(v){return String(v??'').trim().toLowerCase()==='true'||String(v??'').trim().toLowerCase()==='false'}function boolChanged(id){const el=document.getElementById(id),st=document.getElementById(id+'_state');if(!el||!st)return;st.textContent=el.checked?'TRUE':'FALSE';st.className='bool-state '+(el.checked?'on':'')}function toggleIniPassword(id){const el=document.getElementById(id);if(!el)return;el.type=el.type==='password'?'text':'password'}async function loadIni(){let j=await api('/api/ini');iniCache=j;let html='';if(!j.exists)html+=`<p class="muted">INI absent : ${j.path||'dossier serveur non défini'}</p>`;for(const [sec,keys] of Object.entries(j.fields)){html+=`<div class="ini-section"><h3>${sec}</h3><div class="ini-fields">`;for(const k of keys){let val=(j.values[sec]||{})[k]??'';let inputId='ini_'+sec.replace(/[^a-z0-9]/gi,'_')+'_'+k.replace(/[^a-z0-9]/gi,'_');if(isSecretKey(k)){html+=`<div><label>${k}</label><div class="password-wrap"><input id="${inputId}" type="password" autocomplete="new-password" data-sec="${sec}" data-key="${k}" value="${esc(val)}"><button class="btn dark eye-btn" type="button" onclick="toggleIniPassword('${inputId}')">👁</button></div></div>`}else if(isBooleanValue(val)){let checked=String(val).trim().toLowerCase()==='true';html+=`<div class="toggle-row"><label>${k}</label><label class="switch"><input id="${inputId}" type="checkbox" data-bool="true" data-sec="${sec}" data-key="${k}" ${checked?'checked':''} onchange="boolChanged('${inputId}')"><span class="slider"></span></label><span id="${inputId}_state" class="bool-state ${checked?'on':''}">${checked?'TRUE':'FALSE'}</span></div>`}else{html+=`<div><label>${k}</label><input id="${inputId}" data-sec="${sec}" data-key="${k}" value="${esc(val)}"></div>`}}html+='</div></div>'}ini.innerHTML=html;serverName.textContent=(j.values?.['Host Settings']?.ServerName)||serverName.textContent}async function saveIni(){let values={};document.querySelectorAll('#ini input').forEach(el=>{let s=el.dataset.sec,k=el.dataset.key;values[s]??={};values[s][k]=el.dataset.bool==='true'?(el.checked?'true':'false'):el.value});await api('/api/ini',{method:'POST',body:JSON.stringify({values})});note('GameServerSettings.ini sauvegardé');loadIni()}
+async function loadAutoRestart(){
+  try{
+    let j=await api('/api/auto-restart');
+    const enabled=document.getElementById('auto_restart_enabled');
+    const reset=document.getElementById('reset_spawners_before_save');
+    enabled.checked=!!j.enabled;
+    reset.checked=!!j.reset_spawners_before_save;
+    document.getElementById('auto_restart_state').textContent=enabled.checked?'TRUE':'FALSE';
+    document.getElementById('auto_restart_state').className='bool-state '+(enabled.checked?'on':'');
+    document.getElementById('reset_spawners_state').textContent=reset.checked?'TRUE':'FALSE';
+    document.getElementById('reset_spawners_state').className='bool-state '+(reset.checked?'on':'');
+    let times=j.restart_times||[];
+    ['restart_time_1','restart_time_2','restart_time_3','restart_time_4'].forEach((id,i)=>{let el=document.getElementById(id);if(el&&!el.matches(':focus'))el.value=times[i]||''});
+    document.getElementById('auto_restart_warning_minutes').value=j.warning_minutes||10;
+    autoRestartStatus.textContent=j.in_progress?t('auto_restart_in_progress'):t(j.enabled?'auto_restart_status_enabled':'auto_restart_status_disabled');
+  }catch(e){}
+}
+async function saveAutoRestart(){
+  let times=['restart_time_1','restart_time_2','restart_time_3','restart_time_4'].map(id=>document.getElementById(id).value.trim()).filter(Boolean);
+  let body={
+    enabled:document.getElementById('auto_restart_enabled').checked,
+    restart_times:times,
+    reset_spawners_before_save:document.getElementById('reset_spawners_before_save').checked,
+    warning_minutes:Number(document.getElementById('auto_restart_warning_minutes').value||10)
+  };
+  await api('/api/auto-restart',{method:'POST',body:JSON.stringify(body)});
+  note('Auto-restart sauvegardé');
+  loadAutoRestart();
+}
+async function testAutoRestart(){
+  if(!confirm('Lancer un test auto-restart avec compte à rebours 1 minute ?')) return;
+  await api('/api/auto-restart/run-test',{method:'POST',body:JSON.stringify({warning_minutes:1})});
+  note('Test auto-restart lancé');
+  loadAutoRestart();
+}
+['auto_restart_enabled','reset_spawners_before_save'].forEach(id=>{
+  setTimeout(()=>{
+    let el=document.getElementById(id);
+    if(el)el.addEventListener('change',()=>{
+      let st=document.getElementById(id==='auto_restart_enabled'?'auto_restart_state':'reset_spawners_state');
+      st.textContent=el.checked?'TRUE':'FALSE';
+      st.className='bool-state '+(el.checked?'on':'');
+      saveAutoRestart();
+    });
+  },300);
+});
+
+async function loadWatchdog(){
+  try{
+    let j=await api('/api/watchdog');
+    const enabled=document.getElementById('watchdog_enabled');
+    if(!enabled)return;
+    enabled.checked=!!j.enabled;
+    watchdog_interval.value=j.interval||5;
+    watchdog_relaunch_delay.value=j.relaunch_delay||5;
+    watchdog_state.textContent=enabled.checked?'TRUE':'FALSE';
+    watchdog_state.className='bool-state '+(enabled.checked?'on':'');
+    const s=j.stats||{};
+    watchdogRunning.textContent=s.running?t('online_short'):t('offline_short');
+    watchdogRestartCount.textContent=s.restart_count||0;
+    watchdogLastCheck.textContent=s.last_check||'--';
+    watchdogStatus.textContent =
+      t('watchdog_title')+': '+(j.enabled?t('active_upper'):t('inactive_upper'))+
+      '\n'+t('process_label')+': '+(s.running?t('online_lower'):t('offline_lower'))+
+      '\n'+t('last_action')+': '+translateStatusValue(s.last_action||'--')+
+      '\n'+t('install_last_error')+': '+translateStatusValue(s.last_error||t('none'));
+  }catch(e){}
+}
+async function saveWatchdog(){
+  const body={
+    enabled:watchdog_enabled.checked,
+    interval:Number(watchdog_interval.value||5),
+    relaunch_delay:Number(watchdog_relaunch_delay.value||5)
+  };
+  await api('/api/watchdog',{method:'POST',body:JSON.stringify(body)});
+  note('Watchdog sauvegardé');
+  loadWatchdog();
+}
+async function testWatchdog(){
+  const j=await api('/api/watchdog/test',{method:'POST'});
+  watchdogStatus.textContent=JSON.stringify(j,null,2);
+  note('Test watchdog terminé');
+}
+setInterval(loadWatchdog,10000);
+setTimeout(()=>{let el=document.getElementById('watchdog_enabled');if(el)el.addEventListener('change',()=>{watchdog_state.textContent=el.checked?'TRUE':'FALSE';watchdog_state.className='bool-state '+(el.checked?'on':'');saveWatchdog();})},500);
+
+
+async function loadAutoMessages(){
+  try{
+    let j=await api('/api/auto-messages');
+    const enabled=document.getElementById('auto_messages_enabled');
+    if(!enabled)return;
+    enabled.checked=!!j.enabled;
+    auto_messages_interval.value=j.interval||15;
+    auto_messages_mode.value=j.mode||'rotation';
+    auto_messages_list.value=(j.messages||[]).join('\n');
+    auto_messages_state.textContent=enabled.checked?'TRUE':'FALSE';
+    auto_messages_state.className='bool-state '+(enabled.checked?'on':'');
+    const s=j.stats||{};
+    autoMsgLast.textContent=s.last_message||'--';
+    autoMsgNext.textContent=s.next_send||'--';
+    autoMsgCount.textContent=s.sent_count||0;
+    let hist=(s.history||[]).map(x=>`[${x.time}] admin ${x.message}`).join('\n');
+    autoMessagesStatus.textContent =
+      t('auto_messages_title')+': '+(j.enabled?t('active_upper'):t('inactive_upper'))+
+      '\n'+t('send_mode')+': '+t(j.mode||'rotation')+
+      '\n'+t('interval_label')+': '+(j.interval||15)+' min'+
+      '\n'+t('last_sent')+': '+(s.last_sent||'--')+
+      '\n'+t('install_last_error')+': '+translateStatusValue(s.last_error||t('none'))+
+      '\n\n'+t('history')+':\n'+(hist||t('no_message_sent'));
+  }catch(e){}
+}
+async function saveAutoMessages(){
+  const body={
+    enabled:auto_messages_enabled.checked,
+    interval:Number(auto_messages_interval.value||15),
+    mode:auto_messages_mode.value||'rotation',
+    messages:auto_messages_list.value.split('\n').map(x=>x.trim()).filter(Boolean)
+  };
+  await api('/api/auto-messages',{method:'POST',body:JSON.stringify(body)});
+  note(t('auto_messages_saved'));
+  loadAutoMessages();
+}
+async function testAutoMessages(){
+  let msg=prompt(t('auto_messages_test_prompt'), auto_messages_list.value.split('\n').find(Boolean)||t('auto_messages_test_default'));
+  if(!msg)return;
+  await api('/api/auto-messages/test',{method:'POST',body:JSON.stringify({test_message:msg})});
+  note(t('auto_messages_test_sent'));
+  loadAutoMessages();
+}
+setInterval(loadAutoMessages,12000);
+setTimeout(()=>{let el=document.getElementById('auto_messages_enabled');if(el)el.addEventListener('change',()=>{auto_messages_state.textContent=el.checked?'TRUE':'FALSE';auto_messages_state.className='bool-state '+(el.checked?'on':'')})},500);
+
+
+function boolText(el, target){
+  target.textContent=el.checked?'TRUE':'FALSE';
+  target.className='bool-state '+(el.checked?'on':'');
+}
+async function loadChatModeration(){
+  try{
+    let j=await api('/api/chat-moderation');
+    const enabled=document.getElementById('chat_moderation_enabled');
+    if(!enabled)return;
+    enabled.checked=!!j.enabled;
+    chat_warning_enabled.checked=!!j.warning_enabled;
+    chat_kick_enabled.checked=!!j.kick_enabled;
+    chat_warn_before_kick.value=j.warn_before_kick||1;
+    chat_infraction_reset_minutes.value=j.infraction_reset_minutes||60;
+    chat_banned_words.value=(j.banned_words||[]).join('\n');
+
+    boolText(enabled, chat_moderation_state);
+    boolText(chat_warning_enabled, chat_warning_state);
+    boolText(chat_kick_enabled, chat_kick_state);
+
+    const s=j.stats||{};
+    chatWordCount.textContent=(j.banned_words||[]).length;
+    chatWarnings.textContent=s.warnings||0;
+    chatKicks.textContent=s.kicks||0;
+    chatDetections.textContent=s.detections||0;
+
+    let hist=(s.history||[]).map(x=>`[${x.time}] ${x.player} | ${x.word} | ${x.action} | ${x.command||''}`).join('\n');
+
+    chatModerationStatus.textContent =
+      t('chat_moderation_title')+': '+(j.enabled?t('active_upper'):t('inactive_upper'))+
+      '\n'+t('watched_file')+': '+(s.watched_file||'--')+
+      '\n'+t('last_check')+': '+(s.last_check||'--')+
+      '\n'+t('last_action')+': '+translateStatusValue(s.last_action||'--')+
+      '\n'+t('install_last_error')+': '+translateStatusValue(s.last_error||t('none'))+
+      '\n'+t('tracked_players')+': '+(s.players_tracked||0)+
+      '\n\n'+t('history')+':\n'+(hist||t('no_action'));
+  }catch(e){}
+}
+async function saveChatModeration(){
+  const body={
+    enabled:chat_moderation_enabled.checked,
+    warning_enabled:chat_warning_enabled.checked,
+    kick_enabled:chat_kick_enabled.checked,
+    warn_before_kick:Number(chat_warn_before_kick.value||1),
+    infraction_reset_minutes:Number(chat_infraction_reset_minutes.value||60),
+    banned_words:chat_banned_words.value.split('\n').map(x=>x.trim()).filter(Boolean)
+  };
+  await api('/api/chat-moderation',{method:'POST',body:JSON.stringify(body)});
+  note('Modération Chat sauvegardée');
+  loadChatModeration();
+}
+async function testChatModeration(){
+  if(!confirm('Tester une sanction sur TestPlayer avec le premier mot interdit ?'))return;
+  let body={banned_words:chat_banned_words.value.split('\n').map(x=>x.trim()).filter(Boolean)};
+  await api('/api/chat-moderation/test',{method:'POST',body:JSON.stringify(body)});
+  note('Test modération envoyé');
+  loadChatModeration();
+}
+setInterval(loadChatModeration,10000);
+setTimeout(()=>{
+  ['chat_moderation_enabled','chat_warning_enabled','chat_kick_enabled'].forEach(id=>{
+    let el=document.getElementById(id);
+    if(el)el.addEventListener('change',()=>{
+      if(id==='chat_moderation_enabled')boolText(el,chat_moderation_state);
+      if(id==='chat_warning_enabled')boolText(el,chat_warning_state);
+      if(id==='chat_kick_enabled')boolText(el,chat_kick_state);
+    });
+  });
+},500);
+
+
+let playersCache=[];
+function clearPlayersOutput(){playersAdvancedOutput.textContent='';}
+function renderPlayers(players){
+  playersCache=players||[];
+  playersConnectedCount.textContent=playersCache.length;
+  playersChip.textContent=playersCache.length ? tf('players_count',{count:playersCache.length}) : t('no_player');
+  if(!playersCache.length){
+    playersList.innerHTML='<div class="muted">'+t('no_player_detected_help')+'</div>';
+    return;
+  }
+  playersList.innerHTML=playersCache.map((p,i)=>{
+    const name=(p.name||t('player')).replaceAll('<','&lt;').replaceAll('>','&gt;');
+    const id=(p.steamid||t('steamid_not_detected')).replaceAll('<','&lt;').replaceAll('>','&gt;');
+    return `<div class="player-row">
+      <div><div class="player-name">${name}</div><div class="muted">${p.raw||''}</div></div>
+      <div class="player-id">${id}</div>
+      <div class="player-actions">
+        <button class="btn dark" onclick="messagePlayer(${i})">${t('message')}</button>
+        <button class="btn red" onclick="kickPlayer(${i})">${t('kick')}</button>
+        <button class="btn red" onclick="banPlayer(${i})">${t('ban')}</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+async function loadPlayers(){
+  try{
+    const j=await api('/api/players');
+    renderPlayers(j.players||[]);
+    const s=j.stats||{};
+    playersLastRefresh.textContent=s.last_refresh||'--';
+    let hist=(s.history||[]).map(x=>`[${x.time}] ${x.action} ${x.target||''} > ${x.command||''}`).join('\n');
+    playersAdvancedOutput.textContent=
+      'RCON Players: '+(j.ok?'OK':'ERREUR')+
+      '\n'+t('install_last_error')+': '+translateStatusValue(s.last_error||j.error||t('none'))+
+      '\n\n'+t('raw_response')+':\n'+(j.raw||t('empty_response'))+
+      '\n\n'+t('action_history')+':\n'+(hist||t('no_action'));
+    note('Players actualisé');
+  }catch(e){}
+}
+
+async function banPlayer(i){
+  const p=playersCache[i]; if(!p)return;
+  const target=p.steamid||p.name;
+  if(!confirm('BAN '+(p.name||target)+' ?'))return;
+  const j=await api('/api/players/ban',{method:'POST',body:JSON.stringify({steamid:target})});
+  playersAdvancedOutput.textContent='Commande envoyée: '+j.command+'\nRéponse:\n'+(j.response||'(réponse vide)');
+  setTimeout(loadPlayers,1000);
+}
+async function fetchBannedPlayers(){
+  const j=await api('/api/players/banned');
+  playersAdvancedOutput.textContent='Commande envoyée: '+j.command+'\nRéponse:\n'+(j.response||'(réponse vide)');
+}
+
+async function kickPlayer(i){
+  const p=playersCache[i]; if(!p)return;
+  const target=p.steamid||p.name;
+  if(!confirm('Kick '+(p.name||target)+' ?'))return;
+  const j=await api('/api/players/kick',{method:'POST',body:JSON.stringify({steamid:target})});
+  playersAdvancedOutput.textContent='Commande envoyée: '+j.command+'\nRéponse:\n'+(j.response||'(réponse vide)');
+  setTimeout(loadPlayers,1000);
+}
+async function messagePlayer(i){
+  const p=playersCache[i]; if(!p)return;
+  const msg=prompt('Message privé à '+(p.name||p.steamid)+' :','Attention, merci de respecter les règles.');
+  if(!msg)return;
+  const target=p.steamid||p.name;
+  const j=await api('/api/players/message',{method:'POST',body:JSON.stringify({steamid:target,message:msg})});
+  playersAdvancedOutput.textContent='Commande envoyée: '+j.command+'\nRéponse:\n'+(j.response||'(réponse vide)');
+}
+async function sendPlayersGlobalMessage(){
+  const msg=playersGlobalMessage.value.trim();
+  if(!msg)return note('Message vide');
+  const j=await api('/api/players/admin-message',{method:'POST',body:JSON.stringify({message:msg})});
+  playersAdvancedOutput.textContent='Commande envoyée: '+j.command+'\nRéponse:\n'+(j.response||'(réponse vide)');
+  playersGlobalMessage.value='';
+}
+
+
+let fileCurrent='';
+let fileParent='';
+let fileSelected='';
+let fileSelectedEditable=false;
+function fmtFileSize(n){
+  n=Number(n)||0;
+  const u=['B','KB','MB','GB'];let i=0;
+  while(n>1024&&i<u.length-1){n/=1024;i++}
+  return n.toFixed(i?1:0)+' '+u[i];
+}
+function fileRelFromAbsolute(abs, root){
+  if(!abs)return'';
+  let p=abs.replaceAll('\\','/');
+  let r=(root||'').replaceAll('\\','/');
+  return p.startsWith(r)?p.slice(r.length).replace(/^\/+/,''):p;
+}
+async function loadFiles(path=''){
+  try{
+    const j=await api('/api/files?path='+encodeURIComponent(path||''));
+    fileCurrent=j.relative||'';
+    fileParent=j.parent||'';
+    fileBreadcrumb.textContent='/' + (fileCurrent||'');
+    fileCount.textContent=(j.items||[]).length+' élément(s)';
+    fileList.innerHTML='';
+    if(fileCurrent){
+      const up=document.createElement('div');
+      up.className='file-item';
+      up.innerHTML='<div class="file-icon">⬆</div><div><div class="file-name">..</div><div class="file-meta">Dossier parent</div></div><div></div>';
+      up.onclick=()=>loadFiles(fileParent);
+      fileList.appendChild(up);
+    }
+    (j.items||[]).forEach(item=>{
+      const rel=fileRelFromAbsolute(item.path,j.root);
+      const div=document.createElement('div');
+      div.className='file-item';
+      div.innerHTML=`<div class="file-icon">${item.is_dir?'📁':'📄'}</div>
+        <div><div class="file-name">${item.name}</div><div class="file-meta">${item.is_dir?'Dossier':fmtFileSize(item.size)} · ${item.modified}</div></div>
+        <div class="file-meta">${item.ext||''}</div>`;
+      div.onclick=()=> item.is_dir ? loadFiles(rel) : selectFile(rel,item);
+      fileList.appendChild(div);
+    });
+    fileManagerStatus.textContent=t('folder_loaded')+': /'+(fileCurrent||'');
+  }catch(e){}
+}
+function goFileParent(){loadFiles(fileParent||'')}
+async function selectFile(path,item){
+  fileSelected=path;
+  fileSelectedEditable=!!item.editable;
+  document.querySelectorAll('.file-item').forEach(x=>x.classList.remove('active'));
+  event?.currentTarget?.classList?.add('active');
+  fileEditorTitle.textContent=item.name;
+  fileEditorMeta.textContent=(item.editable?'Éditable':'Non éditable')+' · '+fmtFileSize(item.size)+' · '+item.modified;
+  fileDownloadBtn.style.display='inline-flex';
+  fileDownloadBtn.href='/api/files/download?path='+encodeURIComponent(path);
+  if(!item.editable){
+    fileEditor.value='Ce fichier n’est pas éditable dans le panel ou dépasse 2MB.';
+    fileEditor.disabled=true;
+    return;
+  }
+  const j=await api('/api/files/read?path='+encodeURIComponent(path));
+  fileEditor.value=j.content||'';
+  fileEditor.disabled=false;
+}
+async function saveCurrentFile(){
+  if(!fileSelected)return note('Aucun fichier sélectionné');
+  if(!fileSelectedEditable)return note('Fichier non éditable');
+  await api('/api/files/save',{method:'POST',body:JSON.stringify({path:fileSelected,content:fileEditor.value})});
+  note('Fichier sauvegardé');
+  loadFiles(fileCurrent);
+}
+async function deleteCurrentFile(){
+  if(!fileSelected)return note('Aucun fichier sélectionné');
+  if(!confirm('Supprimer '+fileSelected+' ?'))return;
+  await api('/api/files/delete',{method:'POST',body:JSON.stringify({path:fileSelected})});
+  fileSelected='';fileEditor.value='';fileEditor.disabled=true;fileEditorTitle.textContent='Aucun fichier sélectionné';
+  note('Supprimé');
+  loadFiles(fileCurrent);
+}
+async function renameCurrentFile(){
+  if(!fileSelected)return note('Aucun fichier sélectionné');
+  const name=prompt('Nouveau nom :', fileSelected.split('/').pop());
+  if(!name)return;
+  await api('/api/files/rename',{method:'POST',body:JSON.stringify({path:fileSelected,new_name:name})});
+  fileSelected='';fileEditor.value='';fileEditor.disabled=true;
+  note('Renommé');
+  loadFiles(fileCurrent);
+}
+async function createFilePrompt(){
+  const name=prompt('Nom du nouveau fichier :','nouveau.txt');
+  if(!name)return;
+  await api('/api/files/create',{method:'POST',body:JSON.stringify({path:fileCurrent,name,is_dir:false})});
+  note('Fichier créé');
+  loadFiles(fileCurrent);
+}
+async function createFolderPrompt(){
+  const name=prompt('Nom du nouveau dossier :','Nouveau dossier');
+  if(!name)return;
+  await api('/api/files/create',{method:'POST',body:JSON.stringify({path:fileCurrent,name,is_dir:true})});
+  note('Dossier créé');
+  loadFiles(fileCurrent);
+}
+async function uploadSelectedFile(){
+  const input=document.getElementById('fileUploadInput');
+  if(!input.files.length)return;
+  const fd=new FormData();
+  fd.append('file',input.files[0]);
+  const r=await fetch('/api/files/upload?path='+encodeURIComponent(fileCurrent),{method:'POST',body:fd});
+  if(!r.ok){note('Erreur upload');return}
+  input.value='';
+  note('Upload terminé');
+  loadFiles(fileCurrent);
+}
+
+
+async function refreshDashboardPlayers(){
+  try{
+    const j=await api('/api/players');
+    const players=j.players||[];
+    const count=players.length;
+    if(document.getElementById('playerCount')) playerCount.textContent=count;
+    if(document.getElementById('playersBar')) playersBar.style.width=Math.min(100,count*10)+'%';
+    const mini=document.getElementById('dashboardPlayersMini');
+    if(mini){
+      if(count===0){
+        mini.textContent='Aucun joueur en ligne';
+      }else{
+        mini.innerHTML=players.slice(0,5).map(p=>'• '+(p.name||p.steamid||'Joueur')).join('<br>')+(count>5?'<br>+'+(count-5)+' autre(s)':'');
+      }
+    }
+  }catch(e){
+    if(document.getElementById('playerCount')) playerCount.textContent=count;
+    const mini=document.getElementById('dashboardPlayersMini');
+    if(mini) mini.textContent='RCON indisponible';
+  }
+}
+setInterval(refreshDashboardPlayers,10000);
+setTimeout(refreshDashboardPlayers,800);
+
+
+let chatLogsLiveEnabled=false;
+let chatLogsLiveTimer=null;
+function appendChatLogLines(lines){
+  if(!Array.isArray(lines)||!lines.length)return;
+  const out=document.getElementById('chatLogsLiveOut');
+  if(!out)return;
+  const text=lines.map(x=>x).join('\n');
+  out.textContent+=(out.textContent.trim()?'\n':'')+text;
+  out.scrollTop=out.scrollHeight;
+}
+async function loadChatLogsLatest(){
+  try{
+    const j=await api('/api/chat-logs/latest?limit=200');
+    chatLogsLiveOut.textContent=(j.lines||[]).join('\n') || t('no_line');
+    chatLogsLiveFile.textContent=j.filename ? (t('file_label')+': '+j.filename) : t('no_file');
+    chatLogsLiveStatus.textContent=t('last_load')+': '+((j.state||{}).last_update||'--')+' · '+t('lines_label')+': '+((j.state||{}).lines_total||0);
+    chatLogsLiveOut.scrollTop=chatLogsLiveOut.scrollHeight;
+  }catch(e){
+    chatLogsLiveStatus.textContent=t('chat_logs_load_error');
+  }
+}
+async function pollChatLogsLive(){
+  if(!chatLogsLiveEnabled)return;
+  try{
+    const j=await api('/api/chat-logs/poll');
+    if(j.filename) chatLogsLiveFile.textContent=t('file_label')+': '+j.filename;
+    if(j.new_file){
+      chatLogsLiveOut.textContent+='\\n--- '+t('new_chat_file_detected')+': '+(j.filename||'')+' ---';
+    }
+    appendChatLogLines(j.lines||[]);
+    const s=j.state||{};
+    chatLogsLiveStatus.textContent=t('live_active')+' · '+t('last_check')+': '+(s.last_update||'--')+' · '+t('file_lines')+': '+(s.lines_total||0)+(s.last_error?' · '+t('error_label')+': '+s.last_error:'');
+  }catch(e){
+    chatLogsLiveStatus.textContent=t('live_active')+' · '+t('chat_logs_read_error');
+  }
+}
+function toggleChatLogsLive(){
+  chatLogsLiveEnabled=!chatLogsLiveEnabled;
+  if(chatLogsLiveEnabled){
+    chatLogsLiveStatus.textContent=t('live_active')+'...';
+    if(chatLogsLiveTimer)clearInterval(chatLogsLiveTimer);
+    chatLogsLiveTimer=setInterval(pollChatLogsLive,1000);
+    pollChatLogsLive();
+  }else{
+    chatLogsLiveStatus.textContent=t('live_stopped');
+    if(chatLogsLiveTimer)clearInterval(chatLogsLiveTimer);
+    chatLogsLiveTimer=null;
+  }
+}
+function clearChatLogsLive(){
+  chatLogsLiveOut.textContent='';
+}
+
+
+let installUpdateTimer=null;
+async function loadInstallUpdateStatus(){
+  try{
+    const j=await api('/api/install-update/status');
+    const cfg=j.config||{};
+    if(document.getElementById('install_server_dir') && !install_server_dir.matches(':focus')) install_server_dir.value=cfg.server_dir||'';
+    if(document.getElementById('install_steamcmd_dir') && !install_steamcmd_dir.matches(':focus')) install_steamcmd_dir.value=cfg.steamcmd_dir||'';
+    if(document.getElementById('install_app_id') && !install_app_id.matches(':focus')) install_app_id.value=cfg.app_id||'2728330';
+    const btn=document.getElementById('installUpdateBtn');
+    if(btn) btn.textContent=t('install_update');
+    const st=j.state||{};
+    if(document.getElementById('installUpdateConsole')){
+      installUpdateConsole.textContent=
+        t('install_status')+': '+(st.last_status||'idle')+
+        '\n'+t('install_running')+': '+(st.running?t('yes'):t('no'))+
+        '\n'+t('install_server_folder_short')+': '+(cfg.server_dir||'--')+
+        '\nSteamCMD: '+(cfg.steamcmd_dir||'--')+
+        '\nAppID: '+(cfg.app_id||'2728330')+
+        '\n'+t('install_installed_detected')+': '+(cfg.installed?t('yes'):t('no'))+
+        '\n'+t('install_last_error')+': '+(st.last_error||t('none'))+
+        '\n\n'+t('install_logs')+':\n'+((st.logs||[]).join('\n')||t('install_no_log'));
+      installUpdateConsole.scrollTop=installUpdateConsole.scrollHeight;
+    }
+  }catch(e){}
+}
+async function openInstallUpdateModal(){
+  document.getElementById('installUpdateModal').style.display='grid';
+  await loadInstallUpdateStatus();
+  if(installUpdateTimer)clearInterval(installUpdateTimer);
+  installUpdateTimer=setInterval(loadInstallUpdateStatus,1500);
+}
+function closeInstallUpdateModal(){
+  document.getElementById('installUpdateModal').style.display='none';
+  if(installUpdateTimer)clearInterval(installUpdateTimer);
+  installUpdateTimer=null;
+}
+async function startInstallUpdate(){
+  const serverDir=install_server_dir.value.trim();
+  const steamcmdDir=install_steamcmd_dir.value.trim();
+  const appId=install_app_id.value.trim()||'2728330';
+  if(!serverDir){note(t('choose_server_folder'));return}
+  if(!steamcmdDir){note(t('choose_steamcmd_folder'));return}
+
+  try{
+    const detect=await api('/api/server-detect');
+    if(detect.online){
+      alert(t('server_running_install_warning'));
+      return;
+    }
+  }catch(e){}
+
+  const status=await api('/api/install-update/status');
+  const installed=(status.config||{}).installed;
+  const action=t(installed?'install_action_update':'install_action_install');
+  if(!confirm(tf('install_confirm',{action})))return;
+
+  await api('/api/install-update/start',{method:'POST',body:JSON.stringify({
+    server_dir:serverDir,
+    steamcmd_dir:steamcmdDir,
+    app_id:appId,
+    validate:install_validate.checked,
+    restart_after:false
+  })});
+  note((installed?'Mise à jour':'Installation')+' lancée');
+  loadInstallUpdateStatus();
+}
+setTimeout(loadInstallUpdateStatus,1000);
+setInterval(loadInstallUpdateStatus,10000);
+
+cmd.addEventListener('keydown',e=>{if(e.key==='Enter')sendRcon()});function togglePalette(v){palette.style.display=v?'grid':'none';if(v)paletteSearch.focus()}const actions=[['action_start_server',()=>power('start')],['action_stop_server',()=>power('stop')],['action_restart_server',()=>power('restart')],['console',()=>showTab('console')],['config',()=>showTab('config')],['action_create_backup',()=>backup()],['logs',()=>{showTab('logs');loadLogs()}],['action_players_command',()=>quick('Players')],['action_save_command',()=>quick('save')]];function actionLabel(a){return t(a[0])}function renderPalette(){let q=paletteSearch.value.toLowerCase();paletteList.innerHTML=actions.filter(a=>actionLabel(a).toLowerCase().includes(q)).map((a,i)=>`<div class="kbd-item" onclick="runAction(${i})"><span>${actionLabel(a)}</span><b>↵</b></div>`).join('')}function runAction(i){let filtered=actions.filter(a=>actionLabel(a).toLowerCase().includes(paletteSearch.value.toLowerCase()));togglePalette(false);filtered[i]?.[1]()}paletteSearch.addEventListener('input',renderPalette);document.addEventListener('keydown',e=>{if(e.ctrlKey&&e.key.toLowerCase()==='k'){e.preventDefault();renderPalette();togglePalette(true)}if(e.key==='Escape')togglePalette(false)});refresh();loadIni();loadLogs();listBackups();loadAutoRestart();setInterval(refresh,5000);setInterval(loadLogs,9000);setInterval(loadAutoRestart,15000);
+
+async function refreshServerDetect(){
+  try{
+    const j=await api('/api/server-detect');
+    const el=document.getElementById('status');
+    if(el){
+      el.textContent=j.online?'Online':'Offline';
+      el.className='status '+(j.online?'online':'offline');
+      el.title='Détection: '+(j.method||'aucune');
+    }
+    const dbg=document.getElementById('serverDetectDebug');
+    if(dbg){
+      dbg.textContent=JSON.stringify(j,null,2);
+    }
+  }catch(e){}
+}
+setInterval(refreshServerDetect,3000);
+setTimeout(refreshServerDetect,500);
+
+</script></body></html>
+
+

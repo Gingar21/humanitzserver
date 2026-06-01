@@ -1,0 +1,42 @@
+{
+  "server_dir": "E:/Humanitz-server",
+  "steamcmd_dir": "E:/Steamcmd",
+  "port": "7777",
+  "query_port": "27015",
+  "rcon_ip": "127.0.0.1",
+  "rcon_port": "8888",
+  "rcon_password": "",
+  "watchdog_enabled": false,
+  "auto_message_enabled": false,
+  "auto_message_text": "",
+  "auto_message_interval": 15,
+  "auto_restart_enabled": true,
+  "restart_times": [],
+  "watchdog_interval": 5,
+  "watchdog_relaunch_delay": 5,
+  "auto_messages_enabled": false,
+  "auto_messages_interval": 15,
+  "auto_messages_mode": "rotation",
+  "auto_messages_list": [
+    "Bienvenue sur HumanitZ !",
+    "Respectez les règles du serveur.",
+    "Bon jeu à tous !"
+  ],
+  "chat_moderation_enabled": false,
+  "chat_warn_before_kick": 1,
+  "chat_kick_enabled": true,
+  "chat_warning_enabled": true,
+  "chat_infraction_reset_minutes": 60,
+  "server_process_names": [
+    "HumanitZServer-Win64-Shipping.exe",
+    "HumanitZServer.exe",
+    "HumanitZServer-Win64-Shipping-Cmd.exe",
+    "HumanitZ.exe"
+  ],
+  "humanitz_app_id": "2728330",
+  "steamcmd_url": "https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip",
+  "reset_spawners_before_save": true,
+  "auto_restart_warning_minutes": 10,
+  "active_server_id": "default",
+  "active_server_name": "Server 1"
+}

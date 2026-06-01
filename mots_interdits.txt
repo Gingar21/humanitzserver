@@ -1,0 +1,5 @@
+; Inscrivez un mot interdit par ligne (les lignes commençant par ; sont des commentaires)
+; Write one forbidden word per line (lines beginning with ; are comments)
+cheater
+noob
+
