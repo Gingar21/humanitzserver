@@ -2389,8 +2389,10 @@ def startup():
 if __name__ == '__main__':
     import webbrowser
     import uvicorn
+    panel_host = os.environ.get("PANEL_HOST", "127.0.0.1")
+    panel_port = int(os.environ.get("PANEL_PORT", "8765"))
     def open_panel_browser():
-        url = 'http://127.0.0.1:8765'
+        url = f"http://127.0.0.1:{panel_port}"
         try:
             if IS_WINDOWS:
                 os.startfile(url)
@@ -2399,4 +2401,4 @@ if __name__ == '__main__':
         except Exception:
             pass
     threading.Timer(1.0, open_panel_browser).start()
-    uvicorn.run(app, host='127.0.0.1', port=8765, log_config=None, access_log=False)
+    uvicorn.run(app, host=panel_host, port=panel_port, log_config=None, access_log=False)
