@@ -3,6 +3,7 @@ import secrets
 import hashlib
 import zipfile
 import urllib.request
+import urllib.error
 import struct
 import mimetypes
 import shutil
@@ -67,7 +68,9 @@ DEFAULT_CONFIG = {
     'server_process_names': ['HumanitZServer-Win64-Shipping.exe', 'HumanitZServer.exe', 'HumanitZServer-Win64-Shipping-Cmd.exe', 'HumanitZ.exe', 'HumanitZServer', 'HumanitZServer.sh'],
     'humanitz_app_id': '2728330', 'steamcmd_url': 'https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip',
     'steamcmd_linux_url': 'https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz',
-    'reset_spawners_before_save': False, 'auto_restart_warning_minutes': 10
+    'reset_spawners_before_save': False, 'auto_restart_warning_minutes': 10,
+    'discord_enabled': False, 'discord_webhook_url': '', 'discord_update_interval': 5,
+    'discord_message_id': '', 'discord_last_update': '', 'discord_last_error': ''
 }
 
 SERVER_PROFILE_KEYS = [
@@ -443,6 +446,12 @@ class AutoMessagesIn(BaseModel):
     mode: str | None = None
     messages: list[str] | None = None
     test_message: str | None = None
+
+class DiscordIn(BaseModel):
+    enabled: bool | None = None
+    webhook_url: str | None = None
+    interval: int | None = None
+    clear_message: bool | None = None
 
 class ChatModerationIn(BaseModel):
     enabled: bool | None = None
@@ -1950,6 +1959,331 @@ def api_players_raw_command(body: PlayerActionIn):
     return {"ok": True, "command": command, "response": response}
 
 
+# --- Discord status webhook ---
+discord_stats = {
+    "last_update": "",
+    "last_error": "",
+    "message_id": "",
+    "last_payload": {},
+}
+
+def discord_safe_config(cfg):
+    return {
+        "enabled": bool(cfg.get("discord_enabled")),
+        "webhook_configured": bool(cfg.get("discord_webhook_url")),
+        "interval": int(cfg.get("discord_update_interval") or 5),
+        "message_id": cfg.get("discord_message_id", ""),
+        "last_update": cfg.get("discord_last_update") or discord_stats.get("last_update", ""),
+        "last_error": cfg.get("discord_last_error") or discord_stats.get("last_error", ""),
+    }
+
+def discord_read_ini_values():
+    result = {}
+    p = settings_ini_path()
+    if not p or not p.exists():
+        return result
+    try:
+        cp = configparser.ConfigParser(allow_no_value=True, inline_comment_prefixes=';')
+        cp.optionxform = str
+        cp.read(p, encoding='utf-8')
+        for sec, keys in INI_FIELDS.items():
+            result[sec] = {}
+            for k in keys:
+                result[sec][k] = cp.get(sec, k, fallback='').strip().strip('"')
+    except Exception:
+        return {}
+    return result
+
+def discord_pick_weather(world):
+    labels = {
+        "Weather_ClearSky": "Clear Sky",
+        "Weather_Cloudy": "Cloudy",
+        "Weather_Foggy": "Foggy",
+        "Weather_LightRain": "Light Rain",
+        "Weather_Rain": "Rain",
+        "Weather_Thunderstorm": "Thunderstorm",
+        "Weather_LightSnow": "Light Snow",
+        "Weather_Snow": "Snow",
+        "Weather_Blizzard": "Blizzard",
+    }
+    best_label = "Unknown"
+    best_value = -1.0
+    for key, label in labels.items():
+        try:
+            value = float(str(world.get(key, "0") or "0").replace(",", "."))
+        except Exception:
+            value = 0.0
+        if value > best_value:
+            best_label = label
+            best_value = value
+    return best_label
+
+def discord_bar(value, total=100, size=10):
+    try:
+        pct = max(0, min(100, (float(value) / float(total)) * 100 if float(total) else 0))
+    except Exception:
+        pct = 0
+    filled = round((pct / 100) * size)
+    return "█" * filled + "░" * (size - filled)
+
+def discord_fmt_bytes(value):
+    try:
+        n = float(value)
+    except Exception:
+        return "--"
+    units = ["B", "KB", "MB", "GB", "TB"]
+    idx = 0
+    while n >= 1024 and idx < len(units) - 1:
+        n /= 1024
+        idx += 1
+    return f"{n:.1f} {units[idx]}" if idx else f"{int(n)} {units[idx]}"
+
+def discord_system_status():
+    disk = {}
+    cpu = None
+    ram = None
+    net = {}
+    try:
+        d = server_dir()
+        if psutil and d and d.exists():
+            du = psutil.disk_usage(str(d))
+            disk = {"total": du.total, "used": du.used, "free": du.free, "percent": du.percent}
+        if psutil:
+            cpu = psutil.cpu_percent(interval=0.1)
+            mem = psutil.virtual_memory()
+            ram = {"total": mem.total, "used": mem.used, "percent": mem.percent}
+            nio = psutil.net_io_counters()
+            net = {"sent": nio.bytes_sent, "recv": nio.bytes_recv}
+    except Exception:
+        pass
+    return {"cpu": cpu, "ram": ram, "disk": disk, "net": net}
+
+def discord_collect_status():
+    cfg = load_config()
+    running = is_running()
+    ini_values = discord_read_ini_values()
+    host = ini_values.get("Host Settings", {})
+    world = ini_values.get("World Settings", {})
+    players = []
+    raw = ""
+    player_error = ""
+    try:
+        raw = humanitz_rcon_once("Players", timeout=2.5)
+        players = parse_players_from_humanitzrcon(raw)
+    except Exception as e:
+        player_error = str(e)
+
+    return {
+        "server_name": host.get("ServerName") or cfg.get("active_server_name") or "HumanitZ Server",
+        "running": running,
+        "players": players,
+        "player_count": len(players),
+        "max_players": host.get("MaxPlayers") or "50",
+        "player_error": player_error,
+        "raw": raw,
+        "rcon": f"{cfg.get('rcon_ip', '127.0.0.1')}:{cfg.get('rcon_port', '8888')}",
+        "game_port": str(cfg.get("port", "7777")),
+        "query_port": str(cfg.get("query_port", "27015")),
+        "connect_info": "57.129.101.36:7777",
+        "world": {
+            "season": world.get("StartingSeason") or "Unknown",
+            "weather": discord_pick_weather(world),
+            "day_duration": world.get("DayDur") or "--",
+            "night_duration": world.get("NightDur") or "--",
+            "xp": world.get("XpMultiplier") or "1",
+            "pvp": world.get("PVP") or "--",
+        },
+        "ai": {
+            "zombies": world.get("ZombieAmountMulti") or "--",
+            "zombie_health": world.get("ZombieDiffHealth") or "--",
+            "humans": world.get("HumanAmountMulti") or "--",
+            "human_damage": world.get("HumanDamage") or "--",
+            "dogs": world.get("DogNum") or "--",
+        },
+        "system": discord_system_status(),
+        "checked_at": time.strftime("%Y-%m-%d %H:%M:%S"),
+    }
+
+def discord_payload(status):
+    online = bool(status.get("running"))
+    players = status.get("players") or []
+    names = [p.get("name") or p.get("steamid") or "Joueur" for p in players]
+    players_text = "\n".join(f"- {name}" for name in names[:15]) if names else "Aucun joueur en ligne"
+    if len(names) > 15:
+        players_text += f"\n... +{len(names) - 15} autres"
+    if status.get("player_error") and not names:
+        players_text = "Liste joueurs indisponible"
+
+    return {
+        "username": "HumanitZ Server Status",
+        "embeds": [{
+            "title": status.get("server_name") or "HumanitZ Server",
+            "description": "Serveur en ligne" if online else "Serveur hors ligne",
+            "color": 5767578 if online else 13644882,
+            "fields": [
+                {"name": "Statut", "value": "EN LIGNE" if online else "HORS LIGNE", "inline": True},
+                {"name": "Joueurs", "value": str(status.get("player_count", 0)), "inline": True},
+                {"name": "Ports", "value": f"Jeu {status.get('game_port')} / Query {status.get('query_port')}", "inline": True},
+                {"name": "Liste joueurs", "value": players_text[:1000], "inline": False},
+            ],
+            "footer": {"text": "Dernière mise à jour panel"},
+            "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        }],
+    }
+
+def discord_payload_rich(status):
+    online = bool(status.get("running"))
+    players = status.get("players") or []
+    names = [p.get("name") or p.get("steamid") or "Joueur" for p in players]
+    max_players = str(status.get("max_players") or "50")
+    players_text = "\n".join(f"• {name}" for name in names[:15]) if names else "Aucun joueur en ligne"
+    if len(names) > 15:
+        players_text += f"\n... +{len(names) - 15} autres"
+    if status.get("player_error"):
+        players_text += f"\nRCON joueurs: {status['player_error'][:180]}"
+
+    system = status.get("system") or {}
+    ram = system.get("ram") or {}
+    disk = system.get("disk") or {}
+    net = system.get("net") or {}
+    cpu_value = system.get("cpu")
+    world = status.get("world") or {}
+    ai = status.get("ai") or {}
+    try:
+        player_total = float(max_players)
+    except Exception:
+        player_total = 50
+
+    system_lines = [
+        f"CPU  `{discord_bar(cpu_value or 0)}` {round(cpu_value or 0)}%",
+        f"RAM  `{discord_bar(ram.get('percent') or 0)}` {round(ram.get('percent') or 0)}%",
+    ]
+    if disk:
+        system_lines.append(f"Disk `{discord_bar(disk.get('percent') or 0)}` {round(disk.get('percent') or 0)}%")
+    if net:
+        system_lines.append(f"Net  ↓ {discord_fmt_bytes(net.get('recv'))} / ↑ {discord_fmt_bytes(net.get('sent'))}")
+
+    status_icon = "🟢" if online else "🔴"
+    status_label = "ONLINE" if online else "OFFLINE"
+    return {
+        "username": "HumanitZ Server Status",
+        "avatar_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/1935610/header.jpg",
+        "embeds": [{
+            "title": f"{status_icon} {status.get('server_name') or 'HumanitZ Server'}",
+            "description": f"**HumanitZ Dedicated Server**\n`{status_label}` • mise à jour automatique",
+            "color": 0x57F287 if online else 0xED4245,
+            "thumbnail": {"url": "https://cdn.cloudflare.steamstatic.com/steam/apps/1935610/capsule_231x87.jpg"},
+            "fields": [
+                {"name": "🎮 Serveur", "value": f"Status: **{status_label}**\nAdresse: `{status.get('connect_info')}`", "inline": True},
+                {"name": "👥 Joueurs", "value": f"**{status.get('player_count', 0)}/{max_players}**\n`{discord_bar(status.get('player_count', 0), player_total)}`", "inline": True},
+                {"name": "🕒 Monde", "value": f"Season: `{world.get('season')}`\nWeather: `{world.get('weather')}`\nDay/Night: `{world.get('day_duration')}/{world.get('night_duration')}`\nPvP: `{world.get('pvp')}`", "inline": True},
+                {"name": "🧟 IA", "value": f"Zombies: `{ai.get('zombies')}` | HP `{ai.get('zombie_health')}`\nBandits/Humans: `{ai.get('humans')}` | DMG `{ai.get('human_damage')}`\nDogs: `{ai.get('dogs')}`", "inline": True},
+                {"name": "🖥️ Système", "value": "\n".join(system_lines) or "Non disponible", "inline": True},
+                {"name": "📋 Joueurs en ligne", "value": players_text[:1000], "inline": False},
+            ],
+            "footer": {"text": "HumanitZ Server Manager • status bot style"},
+            "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        }],
+    }
+
+def discord_request(url, payload, method="POST"):
+    body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+    req = urllib.request.Request(
+        url,
+        data=body,
+        method=method,
+        headers={
+            "Content-Type": "application/json; charset=utf-8",
+            "Accept": "application/json",
+            "User-Agent": "HumanitZ-Server-Manager/1.0 Discord-Webhook",
+        },
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=8) as resp:
+            text = resp.read().decode("utf-8", errors="ignore")
+            return json.loads(text) if text.strip() else {}
+    except urllib.error.HTTPError as e:
+        detail = e.read().decode("utf-8", errors="ignore")
+        raise RuntimeError(f"Discord HTTP {e.code}: {detail[:300]}")
+
+def discord_send_update(force_new=False):
+    cfg = load_config()
+    webhook_url = (cfg.get("discord_webhook_url") or "").strip()
+    if not webhook_url:
+        raise RuntimeError("Webhook Discord non configuré")
+    if "discord.com/api/webhooks/" not in webhook_url and "discordapp.com/api/webhooks/" not in webhook_url:
+        raise RuntimeError("URL webhook Discord invalide")
+
+    status = discord_collect_status()
+    payload = discord_payload_rich(status)
+    message_id = "" if force_new else (cfg.get("discord_message_id") or "").strip()
+
+    if message_id:
+        url = webhook_url.rstrip("/") + f"/messages/{message_id}"
+        discord_request(url, payload, method="PATCH")
+    else:
+        sep = "&" if "?" in webhook_url else "?"
+        created = discord_request(webhook_url + sep + "wait=true", payload, method="POST")
+        message_id = str(created.get("id") or "")
+
+    now = time.strftime("%Y-%m-%d %H:%M:%S")
+    cfg["discord_message_id"] = message_id
+    cfg["discord_last_update"] = now
+    cfg["discord_last_error"] = ""
+    save_config(cfg)
+    discord_stats.update({"last_update": now, "last_error": "", "message_id": message_id, "last_payload": payload})
+    return {"ok": True, "message_id": message_id, "status": status, "config": discord_safe_config(cfg)}
+
+@app.get('/api/discord')
+def api_discord_get():
+    cfg = load_config()
+    return {"ok": True, "config": discord_safe_config(cfg), "stats": discord_stats}
+
+@app.post('/api/discord')
+def api_discord_set(body: DiscordIn):
+    cfg = load_config()
+    if body.enabled is not None:
+        cfg["discord_enabled"] = bool(body.enabled)
+    if body.webhook_url is not None and body.webhook_url.strip():
+        cfg["discord_webhook_url"] = body.webhook_url.strip()
+    if body.interval is not None:
+        cfg["discord_update_interval"] = max(1, min(120, int(body.interval)))
+    if body.clear_message:
+        cfg["discord_message_id"] = ""
+    save_config(cfg)
+    return {"ok": True, "config": discord_safe_config(cfg), "stats": discord_stats}
+
+@app.post('/api/discord/test')
+def api_discord_test():
+    try:
+        return discord_send_update(force_new=False)
+    except Exception as e:
+        cfg = load_config()
+        cfg["discord_last_error"] = str(e)
+        save_config(cfg)
+        discord_stats["last_error"] = str(e)
+        raise HTTPException(500, f"Erreur Discord: {e}")
+
+def discord_loop():
+    while True:
+        sleep_minutes = 5
+        try:
+            cfg = load_config()
+            enabled = bool(cfg.get("discord_enabled"))
+            sleep_minutes = int(cfg.get("discord_update_interval") or 5)
+            if enabled:
+                discord_send_update(force_new=False)
+        except Exception as e:
+            try:
+                cfg = load_config()
+                cfg["discord_last_error"] = str(e)
+                save_config(cfg)
+            except Exception:
+                pass
+            discord_stats["last_error"] = str(e)
+        time.sleep(max(1, min(120, sleep_minutes)) * 60)
+
+
 # --- Logs Chat Live HumanitZ ---
 chat_logs_live_state = {
     "current_file": "",
@@ -2384,6 +2718,8 @@ def startup():
     threading.Thread(target=watchdog_loop, daemon=True).start()
     log('Watchdog démarré')
     threading.Thread(target=auto_restart_scheduler_loop, daemon=True).start()
+    threading.Thread(target=discord_loop, daemon=True).start()
+    log('Discord status webhook demarre')
     log('Auto-restart scheduler démarré')
 
 if __name__ == '__main__':

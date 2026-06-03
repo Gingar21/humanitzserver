@@ -574,6 +574,71 @@ body.server-select-active .toolbar > .lang-box{
 </section>
 
 
+<section id="discord" class="tab">
+  <div class="panel card">
+    <div class="panel-title">
+      <div>
+        <span class="eyebrow" data-i18n="discord_eyebrow">🔗 Discord</span>
+        <h3 data-i18n="discord_title">Bot statut Discord</h3>
+        <p class="muted" data-i18n="discord_desc">Publie et met à jour automatiquement le statut du serveur dans un salon Discord via webhook.</p>
+      </div>
+      <div class="actions">
+        <button class="btn red" onclick="saveDiscord()" data-i18n="save">Sauvegarder</button>
+        <button class="btn dark" onclick="loadDiscord()" data-i18n="reload">Recharger</button>
+      </div>
+    </div>
+
+    <div class="formgrid">
+      <div class="toggle-row">
+        <label data-i18n="enable_discord_status">Activer le statut Discord</label>
+        <label class="switch"><input id="discord_enabled" type="checkbox"><span class="slider"></span></label>
+        <span class="bool-state" id="discord_state">FALSE</span>
+      </div>
+
+      <div>
+        <label data-i18n="discord_interval">Mise à jour toutes les X minutes</label>
+        <input id="discord_interval" type="number" min="1" max="120" value="5">
+      </div>
+
+      <div style="grid-column:1/-1">
+        <label data-i18n="discord_webhook_url">URL du webhook Discord</label>
+        <input id="discord_webhook_url" type="password" placeholder="https://discord.com/api/webhooks/...">
+      </div>
+
+      <div class="toggle-row">
+        <label data-i18n="discord_new_message">Créer un nouveau message au prochain test</label>
+        <label class="switch"><input id="discord_clear_message" type="checkbox"><span class="slider"></span></label>
+        <span class="bool-state" id="discord_clear_state">FALSE</span>
+      </div>
+    </div>
+
+    <div class="actions" style="margin-top:14px">
+      <button class="btn amber" onclick="testDiscord()" data-i18n="send_test_now">Envoyer un test maintenant</button>
+    </div>
+
+    <div class="grid" style="margin-top:16px">
+      <div class="card">
+        <h3 data-i18n="status">Statut</h3>
+        <div class="metric" id="discordEnabledLabel" style="font-size:20px">--</div>
+        <div class="muted" data-i18n="webhook_configured">Webhook configuré</div>
+      </div>
+      <div class="card">
+        <h3 data-i18n="last_update">Dernière mise à jour</h3>
+        <div class="metric" id="discordLastUpdate" style="font-size:20px">--</div>
+        <div class="muted" data-i18n="discord_message_update">Message Discord édité</div>
+      </div>
+      <div class="card">
+        <h3 data-i18n="discord_message_id">Message ID</h3>
+        <div class="metric" id="discordMessageId" style="font-size:16px">--</div>
+        <div class="muted" data-i18n="discord_reused_message">Réutilisé pour éviter le spam</div>
+      </div>
+    </div>
+
+    <div class="console" id="discordStatus" style="margin-top:14px;min-height:170px" data-i18n="discord_loading">Chargement Discord...</div>
+  </div>
+</section>
+
+
 <section id="chatmoderation" class="tab">
   <div class="panel card">
     <div class="panel-title">
@@ -918,7 +983,7 @@ function applyLang(){
   document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{const key=el.getAttribute('data-i18n-placeholder');if(key)el.setAttribute('placeholder',t(key).replace(/\\n/g,'\n'));});
   translateTextNodes();
   if(typeof tabs!=='undefined'){
-    const map={overview:'dashboard',console:'console',players:'players',config:'config',files:'files',logs:'logs',autorestart:'autorestart',watchdog:'watchdog',automessages:'automessages',chatmoderation:'moderation'};
+    const map={overview:'dashboard',console:'console',players:'players',config:'config',files:'files',logs:'logs',autorestart:'autorestart',watchdog:'watchdog',automessages:'automessages',discord:'discord',chatmoderation:'moderation'};
     document.querySelectorAll('.nav button').forEach(btn=>{const id=(btn.id||'').replace('nav-','');const key=map[id];if(key){const icon=btn.querySelector('i')?.outerHTML||'';btn.innerHTML=icon+t(key);}});
     const active=document.querySelector('.tab.active'); if(active&&document.getElementById('pageTitle')){const key=map[active.id];if(key)pageTitle.textContent=t(key);}
   }
@@ -928,7 +993,7 @@ function applyLang(){
 setTimeout(applyLang,250);
 loadLanguageFiles();
 
-const tabs=[['overview','⌂',t('dashboard')],['console','›',t('console')],['players','👥',t('players')],['config','⚙',t('config')],['files','📁',t('files')],['logs','◷',t('logs')],['autorestart','⏱',t('autorestart')],['watchdog','🛡',t('watchdog')],['automessages','📢',t('automessages')],['chatmoderation','🛡',t('moderation')]];const nav=document.getElementById('nav');tabs.forEach(t=>{let b=document.createElement('button');b.innerHTML=`<i>${t[1]}</i>${t[2]}`;b.onclick=()=>showTab(t[0]);b.id='nav-'+t[0];nav.appendChild(b)});function showTab(id){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.id===id));document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));document.getElementById('nav-'+id).classList.add('active');pageTitle.textContent=tabs.find(x=>x[0]===id)?.[2]||'Panel';setTimeout(applyLang,0);if(id==='logs'&&typeof loadChatLogsLatest==='function')loadChatLogsLatest();if(id==='files'&&typeof loadFiles==='function')loadFiles(fileCurrent||'');if(id==='players'&&typeof loadPlayers==='function')loadPlayers();if(id==='autorestart'&&typeof loadAutoRestart==='function')loadAutoRestart();if(id==='watchdog'&&typeof loadWatchdog==='function')loadWatchdog();if(id==='automessages'&&typeof loadAutoMessages==='function')loadAutoMessages();if(id==='chatmoderation'&&typeof loadChatModeration==='function')loadChatModeration()}showTab('overview');
+const tabs=[['overview','⌂',t('dashboard')],['console','›',t('console')],['players','👥',t('players')],['config','⚙',t('config')],['files','📁',t('files')],['logs','◷',t('logs')],['autorestart','⏱',t('autorestart')],['watchdog','🛡',t('watchdog')],['automessages','📢',t('automessages')],['discord','🔗',t('discord')],['chatmoderation','🛡',t('moderation')]];const nav=document.getElementById('nav');tabs.forEach(t=>{let b=document.createElement('button');b.innerHTML=`<i>${t[1]}</i>${t[2]}`;b.onclick=()=>showTab(t[0]);b.id='nav-'+t[0];nav.appendChild(b)});function showTab(id){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.id===id));document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));document.getElementById('nav-'+id).classList.add('active');pageTitle.textContent=tabs.find(x=>x[0]===id)?.[2]||'Panel';setTimeout(applyLang,0);if(id==='logs'&&typeof loadChatLogsLatest==='function')loadChatLogsLatest();if(id==='files'&&typeof loadFiles==='function')loadFiles(fileCurrent||'');if(id==='players'&&typeof loadPlayers==='function')loadPlayers();if(id==='autorestart'&&typeof loadAutoRestart==='function')loadAutoRestart();if(id==='watchdog'&&typeof loadWatchdog==='function')loadWatchdog();if(id==='automessages'&&typeof loadAutoMessages==='function')loadAutoMessages();if(id==='discord'&&typeof loadDiscord==='function')loadDiscord();if(id==='chatmoderation'&&typeof loadChatModeration==='function')loadChatModeration()}showTab('overview');
 const started=Date.now(),hist=[];const commands=['info','Players','save','admin','RestartNow','CancelRestart','QuickRestart','shutdown','kick <SteamID>'];quickCmds.innerHTML=commands.map(c=>`<button class="btn dark" onclick="quick('${c.replaceAll("'","\\'")}')">${c}</button>`).join('');function note(t){toast.textContent=t;toast.style.display='block';setTimeout(()=>toast.style.display='none',2800)}async function api(url,opt={}){const r=await fetch(url,{headers:{'Content-Type':'application/json'},...opt});if(!r.ok){let tx=await r.text();note('Erreur: '+tx.slice(0,120));throw new Error(tx)}return r.json()}function fmtBytes(n){if(!n)return'--';let u=['B','KB','MB','GB','TB'],i=0;while(n>1024&&i<u.length-1){n/=1024;i++}return n.toFixed(i?1:0)+' '+u[i]}function setRing(el,p){p=Math.max(0,Math.min(100,Number(p)||0));el.textContent=Math.round(p)+'%';el.style.background=`conic-gradient(var(--red) ${p*3.6}deg,rgba(255,255,255,.09) 0deg)`}function drawSpark(){let c=spark,ctx=c.getContext('2d'),w=c.width=c.offsetWidth*devicePixelRatio,h=c.height=c.offsetHeight*devicePixelRatio;ctx.clearRect(0,0,w,h);ctx.strokeStyle='rgba(211,52,52,.85)';ctx.lineWidth=2*devicePixelRatio;ctx.beginPath();hist.forEach((v,i)=>{let x=i/(Math.max(hist.length-1,1))*w,y=h-(v/100*h*.82)-h*.09;i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke();ctx.strokeStyle='rgba(255,255,255,.12)';ctx.lineWidth=1;for(let i=1;i<4;i++){ctx.beginPath();ctx.moveTo(0,h*i/4);ctx.lineTo(w,h*i/4);ctx.stroke()}}async function refresh(){try{const j=await api('/api/status');const cfg=j.config||{};status.textContent=j.running?'Online':'Offline';status.className='status '+(j.running?'online':'offline');serverName.textContent=(iniCache?.values?.['Host Settings']?.ServerName)||'HumanitZ Dedicated Server';exePath.textContent=j.exe||'Executable non détecté';serverDirChip.textContent=cfg.server_dir||'Aucun dossier serveur';rconAddr.textContent=(cfg.rcon_ip||'127.0.0.1')+':'+(cfg.rcon_port||'8888');portInfo.textContent=(cfg.port||'7777')+' / '+(cfg.query_port||'27015');diskInfo.textContent=j.disk?.percent!=null?`${j.disk.percent}% utilisé (${fmtBytes(j.disk.free)} libres)`:'--';setRing(cpuRing,j.cpu||0);cpuLabel.textContent='Charge actuelle '+Math.round(j.cpu||0)+'%';let rp=j.ram?.percent||0;setRing(ramRing,rp);ramLabel.textContent=fmtBytes(j.ram?.used)+' / '+fmtBytes(j.ram?.total);hist.push(j.cpu||0);while(hist.length>40)hist.shift();drawSpark();['server_dir','steamcmd_dir','port','query_port','rcon_ip','rcon_port','rcon_password'].forEach(k=>{let el=document.getElementById(k);if(el&&!el.matches(':focus'))el.value=cfg[k]||''});}catch(e){}}function tick(){clock.textContent=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});let s=Math.floor((Date.now()-started)/1000),h=String(Math.floor(s/3600)).padStart(2,'0'),m=String(Math.floor(s%3600/60)).padStart(2,'0'),sec=String(s%60).padStart(2,'0');uptime.textContent=`${h}:${m}:${sec}`}setInterval(tick,1000);tick();async function browseFolder(target){try{note('Ouverture du navigateur de dossiers Windows...');let j=await api('/api/browse-folder',{method:'POST',body:JSON.stringify({target})});if(j.cancelled){note('Sélection annulée');return;}document.getElementById(target).value=j.path||'';note('Dossier sélectionné');refresh();loadIni();}catch(e){note('Erreur navigateur de dossiers');}}async function saveConfig(){let body={};['server_dir','steamcmd_dir','port','query_port','rcon_ip','rcon_port','rcon_password'].forEach(k=>body[k]=document.getElementById(k).value);await api('/api/config',{method:'POST',body:JSON.stringify(body)});note('Configuration sauvegardée');refresh();loadIni()}async function power(a){await api('/api/power/'+a,{method:'POST'});note('Action envoyée : '+a);setTimeout(refresh,1300)}async function sendRcon(){let c=cmd.value.trim();if(!c)return;let j=await api('/api/rcon',{method:'POST',body:JSON.stringify({command:c})});rconOut.textContent=`> ${c}\n${j.response||'(réponse vide)'}\n\n`+rconOut.textContent;cmd.value=''}function quick(c){cmd.value=c;sendRcon()}async function players(){let j=await api('/api/players');playersOut.textContent=j.raw||'(aucun retour)';let count=(j.raw||'').split('\n').filter(x=>x.trim()).length;/* playerCount handled by refreshDashboardPlayers */playersBar.style.width=Math.min(100,count*8)+'%'}async function backup(){let j=await api('/api/backup',{method:'POST'});note('Backup créé');listBackups()}async function listBackups(){let j=await api('/api/backups');backupCount.textContent=(j.backups||[]).length;backupsOut.textContent=JSON.stringify(j.backups,null,2)}async function loadLogs(){let j=await api('/api/logs');logsOut.textContent=j.panel||'';logLines.textContent=(j.panel||'').split('\n').filter(Boolean).length}let iniCache=null;function esc(v){return String(v??'').replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;')}function isSecretKey(k){return ['Password','AdminPass','RCONPass'].includes(k)}function isBooleanValue(v){return String(v??'').trim().toLowerCase()==='true'||String(v??'').trim().toLowerCase()==='false'}function boolChanged(id){const el=document.getElementById(id),st=document.getElementById(id+'_state');if(!el||!st)return;st.textContent=el.checked?'TRUE':'FALSE';st.className='bool-state '+(el.checked?'on':'')}function toggleIniPassword(id){const el=document.getElementById(id);if(!el)return;el.type=el.type==='password'?'text':'password'}async function loadIni(){let j=await api('/api/ini');iniCache=j;let html='';if(!j.exists)html+=`<p class="muted">INI absent : ${j.path||'dossier serveur non défini'}</p>`;for(const [sec,keys] of Object.entries(j.fields)){html+=`<div class="ini-section"><h3>${sec}</h3><div class="ini-fields">`;for(const k of keys){let val=(j.values[sec]||{})[k]??'';let inputId='ini_'+sec.replace(/[^a-z0-9]/gi,'_')+'_'+k.replace(/[^a-z0-9]/gi,'_');if(isSecretKey(k)){html+=`<div><label>${k}</label><div class="password-wrap"><input id="${inputId}" type="password" autocomplete="new-password" data-sec="${sec}" data-key="${k}" value="${esc(val)}"><button class="btn dark eye-btn" type="button" onclick="toggleIniPassword('${inputId}')">👁</button></div></div>`}else if(isBooleanValue(val)){let checked=String(val).trim().toLowerCase()==='true';html+=`<div class="toggle-row"><label>${k}</label><label class="switch"><input id="${inputId}" type="checkbox" data-bool="true" data-sec="${sec}" data-key="${k}" ${checked?'checked':''} onchange="boolChanged('${inputId}')"><span class="slider"></span></label><span id="${inputId}_state" class="bool-state ${checked?'on':''}">${checked?'TRUE':'FALSE'}</span></div>`}else{html+=`<div><label>${k}</label><input id="${inputId}" data-sec="${sec}" data-key="${k}" value="${esc(val)}"></div>`}}html+='</div></div>'}ini.innerHTML=html;serverName.textContent=(j.values?.['Host Settings']?.ServerName)||serverName.textContent}async function saveIni(){let values={};document.querySelectorAll('#ini input').forEach(el=>{let s=el.dataset.sec,k=el.dataset.key;values[s]??={};values[s][k]=el.dataset.bool==='true'?(el.checked?'true':'false'):el.value});await api('/api/ini',{method:'POST',body:JSON.stringify({values})});note('GameServerSettings.ini sauvegardé');loadIni()}
 async function loadAutoRestart(){
   try{
@@ -1062,6 +1127,61 @@ async function testAutoMessages(){
 }
 setInterval(loadAutoMessages,12000);
 setTimeout(()=>{let el=document.getElementById('auto_messages_enabled');if(el)el.addEventListener('change',()=>{auto_messages_state.textContent=el.checked?'TRUE':'FALSE';auto_messages_state.className='bool-state '+(el.checked?'on':'')})},500);
+
+
+async function loadDiscord(){
+  try{
+    let j=await api('/api/discord');
+    const c=j.config||{};
+    const enabled=document.getElementById('discord_enabled');
+    if(!enabled)return;
+    enabled.checked=!!c.enabled;
+    discord_interval.value=c.interval||5;
+    discord_webhook_url.value='';
+    discord_state.textContent=enabled.checked?'TRUE':'FALSE';
+    discord_state.className='bool-state '+(enabled.checked?'on':'');
+    discord_clear_state.textContent=discord_clear_message.checked?'TRUE':'FALSE';
+    discord_clear_state.className='bool-state '+(discord_clear_message.checked?'on':'');
+    discordEnabledLabel.textContent=(c.enabled?t('active_upper'):t('inactive_upper'))+' / '+(c.webhook_configured?'OK':'--');
+    discordLastUpdate.textContent=c.last_update||'--';
+    discordMessageId.textContent=c.message_id||'--';
+    discordStatus.textContent =
+      t('discord_title')+': '+(c.enabled?t('active_upper'):t('inactive_upper'))+
+      '\n'+t('webhook_configured')+': '+(c.webhook_configured?'OK':'--')+
+      '\n'+t('discord_interval')+': '+(c.interval||5)+' min'+
+      '\n'+t('last_update')+': '+(c.last_update||'--')+
+      '\n'+t('install_last_error')+': '+translateStatusValue(c.last_error||t('none'));
+  }catch(e){}
+}
+async function saveDiscord(){
+  const body={
+    enabled:discord_enabled.checked,
+    interval:Number(discord_interval.value||5),
+    webhook_url:discord_webhook_url.value.trim(),
+    clear_message:discord_clear_message.checked
+  };
+  await api('/api/discord',{method:'POST',body:JSON.stringify(body)});
+  discord_webhook_url.value='';
+  discord_clear_message.checked=false;
+  discord_clear_state.textContent='FALSE';
+  discord_clear_state.className='bool-state';
+  note(t('discord_saved'));
+  loadDiscord();
+}
+async function testDiscord(){
+  await saveDiscord();
+  const j=await api('/api/discord/test',{method:'POST',body:JSON.stringify({})});
+  note(t('discord_test_sent'));
+  discordStatus.textContent=JSON.stringify(j.status||j,null,2);
+  loadDiscord();
+}
+setInterval(loadDiscord,15000);
+setTimeout(()=>{
+  const enabled=document.getElementById('discord_enabled');
+  const clear=document.getElementById('discord_clear_message');
+  if(enabled)enabled.addEventListener('change',()=>{discord_state.textContent=enabled.checked?'TRUE':'FALSE';discord_state.className='bool-state '+(enabled.checked?'on':'')});
+  if(clear)clear.addEventListener('change',()=>{discord_clear_state.textContent=clear.checked?'TRUE':'FALSE';discord_clear_state.className='bool-state '+(clear.checked?'on':'')});
+},500);
 
 
 function boolText(el, target){
