@@ -1,7 +1,7 @@
 {
-    "current_lang": "Fran\u00e7ais",
-    "steamcmd_dir": "E:\\Steamcmd",
-    "server_dir": "E:\\Humanitz-server",
+    "current_lang": "",
+    "steamcmd_dir": "",
+    "server_dir": "",
     "net_port": "7777",
     "net_queryport": "27015",
     "watchdog_enabled": "false",
